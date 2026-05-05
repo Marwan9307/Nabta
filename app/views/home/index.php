@@ -1,6 +1,7 @@
 <?php
 $data['page_title'] = $data['page_title'] ?? 'NABTA | Home';
 require_once __DIR__ . '/../layout/header.php';
+include "../assets"
 ?>
 <script>document.body.dataset.cursorTrail='hero';</script>
 
