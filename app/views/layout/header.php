@@ -14,14 +14,13 @@ $chats = $data['chat_users'] ?? [];
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital@1&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/e-University-seProject/assets/css/style.css" rel="stylesheet">
+  <link href="../../../assets/css/style.css" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg sticky-top border-bottom border-success-subtle">
   <div class="container py-2">
     <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-      <img src="/assets/c__Users_3B_AppData_Roaming_Cursor_User_workspaceStorage_1724d4f9f91378d708b069f6df51a6ad_images_image-839e434d-529f-463d-8705-119c736ecb68.png" alt="NABTA Logo" width="42" height="42" class="rounded-circle object-fit-cover">
-      <span class="fw-bold font-serif">NABTA</span>
+      <span class="fw-bold font-serif">🌿 NABTA</span>
     </a>
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav" type="button">
       <span class="navbar-toggler-icon"></span>
@@ -31,7 +30,6 @@ $chats = $data['chat_users'] ?? [];
         <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="/marketplace">Marketplace</a></li>
         <li class="nav-item"><a class="nav-link" href="/community">Community</a></li>
-        <li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
       </ul>
       <div class="d-flex align-items-center gap-2">
         <button class="icon-btn spring" id="themeToggle" title="Toggle theme">🌞</button>
@@ -40,6 +38,8 @@ $chats = $data['chat_users'] ?? [];
           <a href="/auth/login" class="btn btn-clay rounded-pill px-3">Login</a>
         <?php else: ?>
           <a href="/item/closet" class="btn btn-sage-outline rounded-pill px-3">My Closet</a>
+          <a href="/order" class="btn btn-sage-outline rounded-pill px-3">Orders</a>
+          <a href="/swap" class="btn btn-sage-outline rounded-pill px-3">Swaps</a>
           <button class="icon-btn spring" data-bs-toggle="offcanvas" data-bs-target="#chatOffcanvas" title="Chat">💬</button>
           <div class="dropdown">
             <button class="icon-btn spring" data-bs-toggle="dropdown" title="Notifications">🔔</button>
@@ -47,43 +47,28 @@ $chats = $data['chat_users'] ?? [];
               <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                 <strong>Notifications</strong>
                 <div class="d-flex gap-2 align-items-center">
-                  <button class="btn btn-sm btn-link p-0">Mark all as read</button>
-                  <button class="btn btn-sm p-0" data-bs-toggle="dropdown">✕</button>
+                  <form method="post" action="/notification/read-all" class="d-inline"><button class="btn btn-sm btn-link p-0" type="submit">Mark all as read</button></form>
                 </div>
               </div>
-              <ul class="nav nav-tabs px-3 pt-2">
-                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#directTab" type="button">Direct</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#overallTab" type="button">Overall</button></li>
-              </ul>
-              <div class="tab-content p-3">
-                <div class="tab-pane fade show active" id="directTab">
-                  <?php foreach ($notifications as $notification): ?>
-                    <div class="card card-body mb-2 spring">
-                      <div class="d-flex gap-2">
-                        <img src="<?= $notification['avatar'] ?? 'https://placehold.co/36x36' ?>" width="36" height="36" class="rounded-circle" alt="">
-                        <div class="small">
-                          <div><?= $notification['text'] ?? 'New activity detected.' ?></div>
-                          <div class="text-muted"><?= $notification['time'] ?? 'Now' ?></div>
-                        </div>
-                      </div>
-                      <?php if (($notification['type'] ?? '') === 'action'): ?>
-                        <div class="d-flex gap-2 mt-2">
-                          <button class="btn btn-sm text-white" style="background:#5f8fcf">Accept</button>
-                          <button class="btn btn-sm btn-light border">Decline</button>
-                        </div>
-                      <?php endif; ?>
+              <div class="p-3" style="max-height:300px;overflow-y:auto;">
+                <?php foreach ($notifications as $notification): ?>
+                  <div class="card card-body mb-2 spring">
+                    <div class="small">
+                      <div><?= is_array($notification) ? ($notification['msg_text'] ?? '') : '' ?></div>
+                      <div class="text-muted"><?= is_array($notification) ? ($notification['created_at'] ?? 'Now') : 'Now' ?></div>
                     </div>
-                  <?php endforeach; ?>
-                </div>
-                <div class="tab-pane fade" id="overallTab">
-                  <p class="small mb-0">All eco-activity and marketplace updates appear here.</p>
-                </div>
+                  </div>
+                <?php endforeach; ?>
+                <?php if (empty($notifications)): ?>
+                  <p class="small text-muted mb-0">No new notifications.</p>
+                <?php endif; ?>
               </div>
             </div>
           </div>
           <a href="/profile" class="icon-btn spring p-0 overflow-hidden" title="Profile">
             <img src="<?= $avatar ?>" alt="Avatar" width="36" height="36" class="rounded-circle object-fit-cover">
           </a>
+          <a href="/auth/logout" class="btn btn-sm btn-outline-secondary rounded-pill">Logout</a>
         <?php endif; ?>
       </div>
     </div>
@@ -109,12 +94,6 @@ $chats = $data['chat_users'] ?? [];
         <?php endforeach; ?>
       </div>
       <div class="flex-grow-1 p-3 d-flex flex-column">
-        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-          <div>
-            <button class="btn btn-sm text-white" style="background:#5f8fcf">Accept Deal</button>
-            <button class="btn btn-sm btn-light border">Reject Deal</button>
-          </div>
-        </div>
         <div class="flex-grow-1 card-eco p-3 mb-2 small">Conversation window</div>
         <div class="input-group">
           <input class="form-control" placeholder="Type a message...">

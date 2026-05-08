@@ -1,7 +1,6 @@
 <?php
 $data['page_title'] = $data['page_title'] ?? 'NABTA | Home';
 require_once __DIR__ . '/../layout/header.php';
-include "../assets"
 ?>
 <script>document.body.dataset.cursorTrail='hero';</script>
 
@@ -11,7 +10,7 @@ include "../assets"
       <h1 class="hero-title mb-3"><?= $data['hero_title'] ?? 'Wear your values. Refresh your closet.' ?></h1>
       <p class="lead"><?= $data['hero_subtitle'] ?? 'Sustainable fashion marketplace for swaps, upcycling, and conscious buying.' ?></p>
       <div class="d-flex gap-2">
-        <a href="/marketplace" class="btn btn-clay btn-lg rounded-pill px-4">Shop Now</a>
+        <a href="../marketplace" class="btn btn-clay btn-lg rounded-pill px-4">Shop Now</a>
         <button class="btn btn-sage-outline btn-lg rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#applyUpcyclerModal">Start Upcycling</button>
       </div>
     </div>
@@ -31,12 +30,12 @@ include "../assets"
   <h2 class="mb-3">The Transformation</h2>
   <div class="row align-items-center g-3">
     <div class="col-md-5 text-center">
-      <img class="transformation-img" src="<?= $data['upcycle_left_image'] ?? '/assets/c__Users_3B_AppData_Roaming_Cursor_User_workspaceStorage_1724d4f9f91378d708b069f6df51a6ad_images_image-5f6285b9-0a60-47ce-a1fe-ceef2a901140.png' ?>" alt="Old clothes">
+      <img class="transformation-img before" src="../../../assets/OldCl.png" alt="Old clothes">
       <div>🐛</div>
     </div>
     <div class="col-md-2 text-center fs-1">➜</div>
     <div class="col-md-5 text-center">
-      <img class="transformation-img" src="<?= $data['upcycle_right_image'] ?? '/assets/c__Users_3B_AppData_Roaming_Cursor_User_workspaceStorage_1724d4f9f91378d708b069f6df51a6ad_images_image-5f6285b9-0a60-47ce-a1fe-ceef2a901140.png' ?>" alt="Upcycled pieces">
+      <img class="transformation-img after" src="../../../assets/NewCl.png" alt="Upcycled pieces">
       <div>🦋</div>
     </div>
   </div>
@@ -55,10 +54,10 @@ include "../assets"
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content card-eco border-0">
       <div class="modal-header"><h5>Apply for Upcycler Status</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-      <form class="modal-body">
-        <div class="mb-3"><label class="form-label">Portfolio Upload</label><input class="form-control" type="file"></div>
-        <div class="mb-3"><label class="form-label">Why I want to join</label><textarea class="form-control" rows="3"></textarea></div>
-        <button class="btn btn-clay w-100" type="button" data-bs-dismiss="modal" onclick="alert('Under Review ⏳')">Submit</button>
+      <form class="modal-body" method="post" action="/profile/apply-role" enctype="multipart/form-data">
+        <div class="mb-3"><label class="form-label">Portfolio Upload</label><input class="form-control" type="file" name="portfolio"></div>
+        <div class="mb-3"><label class="form-label">Why I want to join</label><textarea class="form-control" rows="3" name="motivation"></textarea></div>
+        <button class="btn btn-clay w-100" type="submit">Submit</button>
       </form>
     </div>
   </div>

@@ -3,11 +3,13 @@
   <div class="col-md-5">
     <div class="card-eco p-4">
       <h2 class="mb-3">Welcome back</h2>
+      <?php if (!empty($data['error'])): ?><div class="alert alert-danger"><?= $data['error'] ?></div><?php endif; ?>
       <form method="post" action="/auth/login">
         <div class="mb-3"><label>Email</label><input type="email" name="email" class="form-control" value="<?= $data['email'] ?? '' ?>"></div>
         <div class="mb-3"><label>Password</label><input type="password" name="password" class="form-control"></div>
         <button class="btn btn-clay w-100">Login</button>
       </form>
+      <p class="mt-3 text-center"><a href="/auth/register">Don't have an account? Register</a></p>
     </div>
   </div>
 </div>
