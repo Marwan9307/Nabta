@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../models/PaymentGateway.php';
 
 class PaymentController {
     public function __construct() {
@@ -14,14 +15,14 @@ class PaymentController {
     }
 
     public function secureEscrow($transactionId) {
-        // Logic to hold funds in escrow until transaction is verified
-        // Corresponding to Use Case: Secure Escrow
+        $paymentGateway = PaymentGateway::getInstance();
+        $paymentGateway->executeCharge(200); // Example logic
         echo "Funds secured in escrow for transaction " . htmlspecialchars($transactionId);
     }
 
     public function manageRollback($transactionId) {
-        // Logic to refund/rollback money to buyer
-        // Corresponding to Use Case: Manage Rollback Transaction
+        $paymentGateway = PaymentGateway::getInstance();
+        $paymentGateway->executeRefund($transactionId);
         echo "Transaction " . htmlspecialchars($transactionId) . " rolled back successfully.";
     }
 }
