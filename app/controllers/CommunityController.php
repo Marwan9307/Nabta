@@ -54,10 +54,29 @@ class CommunityController {
         require_once __DIR__ . '/../views/community/create.php';
     }
 
+    private function checkFraudDetection($content) {
+        $spamKeywords = ['scam', 'fake url', 'wire transfer'];
+        foreach ($spamKeywords as $keyword) {
+            if (stripos($content, $keyword) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function create() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
 
         $title = $_POST['title'] ?? '';
+        $content = $_POST['content'] ?? '';
+        
+        // Use Case: Check Fraud Detection (<include> from Post in Community)
+        if ($this->checkFraudDetection($content)) {
+            // flag the post or block it
+            Session::flash('error', 'Post flagged as spam/fraud.');
+            header('Location: /community/create');
+            exit;
+        }
         $content = $_POST['content'] ?? '';
         $postType = $_POST['post_type'] ?? 'general';
 

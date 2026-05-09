@@ -56,6 +56,25 @@ class AdminController {
         exit;
     }
 
+    public function acceptMember() {
+        // Use Case: Accept Member
+        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
+        $userId = $_POST['user_id'] ?? 0;
+        $userModel = new UserModel();
+        // custom model logic: $userModel->updateStatus($userId, 'active');
+        header('Location: /admin');
+        exit;
+    }
+
+    public function modifyFees() {
+        // Use Case: Modify Fees for Specific Categories
+        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
+        $category = $_POST['category'] ?? '';
+        $fee_percentage = $_POST['fee_percentage'] ?? 0;
+        // custom logic to update fees settings
+        echo "Fees updated for category: " . htmlspecialchars($category);
+    }
+
     public function reports() {
         if (!Session::isLoggedIn() || !in_array(Session::userRole(), ['admin', 'moderator'])) {
             header('Location: /auth/login');

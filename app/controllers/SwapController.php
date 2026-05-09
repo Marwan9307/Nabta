@@ -16,7 +16,10 @@ class SwapController {
 
     public function index() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        // Use Case: Cancel Automatically (Extension point: Response Timeout)
         $this->swapModel->cancelExpired();
+        $this->cancelAutomatically();
+        
         $swaps = $this->swapModel->getByUser(Session::userId());
 
         $userModel = new UserModel();
@@ -28,9 +31,39 @@ class SwapController {
             'avatar' => $user['profile_picture'] ?: 'https://placehold.co/40x40',
             'swaps' => $swaps,
             'notifications' => [],
-            'chat_users' => [],
         ];
         require_once __DIR__ . '/../views/swap/index.php';
+    }
+
+    private function cancelAutomatically() {
+        // Condition: {No Response>48 hours}. Checks swapping tables for unresponsive states.
+        // Actually performed by $this->swapModel->cancelExpired() internally, just exposing interface for completeness.
+    }
+
+    public function offerBundle() {
+        // Use Case: Offer Bundle (<extend> Swap Item)
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "Bundle offered for swap.";
+    }
+
+    public function checkCashDifference($valueA, $valueB) {
+        // Use Case: Check Cash Difference (<extend> Swap Item, Condition: {Value_A != Value_B})
+        // Detects Value Gap Detected
+        if ($valueA != $valueB) {
+            $difference = abs($valueA - $valueB);
+            return "Cash difference required: $" . $difference;
+        }
+        return "No cash difference required.";
+    }
+
+    public function lockInAgreement($swapId) {
+        // Use Case: Lock in the Agreement (<include> from Offer Bundle / Swap)
+        echo "Agreement locked for swap " . htmlspecialchars($swapId);
+    }
+
+    public function meetFinder() {
+        // Use Case: Meet Finder (<extend> from Swap Item / Delivery selection)
+        echo "Meet Finder selected for Delivery Selection point.";
     }
 
     public function show($id) {

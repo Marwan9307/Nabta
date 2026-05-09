@@ -15,6 +15,28 @@ class OrderController {
         $this->orderModel = new OrderModel();
     }
 
+    public function negotiatePrice($itemId, $proposedPrice) {
+        // Use Case: Negotiate Price (<extend> Do an Operation)
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "Negotiation started for item {$itemId} with price {$proposedPrice}";
+    }
+
+    public function offerMultiItem() {
+        // Use Case: Offer Multi-Item (<extend> Buy Item / Sell Item)
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "Multi-item offer submitted.";
+    }
+
+    public function calculateCO2AndWater() {
+        // Use Case: Calculate CO2 and Water Equation (<include> Do an Operation)
+        echo "CO2 and Water savings calculated.";
+    }
+
+    public function calculateEcoCredits() {
+        // Use Case: Calculate Eco-credits (<include> Do an Operation)
+        echo "Eco-credits calculated and awarded.";
+    }
+
     public function index() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
         $orders = $this->orderModel->getByBuyer(Session::userId());

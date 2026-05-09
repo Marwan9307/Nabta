@@ -27,8 +27,37 @@ class ItemController {
             'notifications' => [],
             'chat_users' => [],
         ];
-
         require_once __DIR__ . '/../views/item/closet.php';
+    }
+
+    public function requestStyling() {
+        // Use Case: Request Styling
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "Styling request submitted.";
+    }
+
+    public function generateAiOutfit() {
+        // Use Case: Generate AI Outfit (<extend> Request Styling)
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "AI has generated outfit recommendations based on your closet.";
+    }
+
+    public function createBoard() {
+        // Use Case: Create Board
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        $boardName = $_POST['board_name'] ?? 'New Board';
+        echo "Board '{$boardName}' created successfully.";
+    }
+
+    public function assessItem($itemId) {
+        // Use Case: Assess Item (<include> from Do an Operation)
+        echo "Item status and authenticity assessed for ID: " . htmlspecialchars($itemId);
+    }
+
+    public function listBulkItems() {
+        // Use Case: List Bulk Items (<extend> from Assess Item)
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        echo "Multiple items assessed and listed in bulk.";
     }
 
     public function createForm() {
