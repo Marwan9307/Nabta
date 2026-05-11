@@ -118,6 +118,41 @@
       if (target) window.location.href = target;
     }, 2000);
   }
+
+  window.togglePassword = function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'Hide';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'See';
+    }
+  };
+
+  const regPass = document.getElementById('registerPassword');
+  if (regPass) {
+    regPass.addEventListener('input', function() {
+      const val = regPass.value;
+      const setConstraint = (id, isValid) => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (isValid) {
+            el.className = 'text-success';
+            el.innerHTML = '&#10003; ' + el.innerHTML.substring(2);
+          } else {
+            el.className = 'text-danger';
+            el.innerHTML = '&#10007; ' + el.innerHTML.substring(2);
+          }
+        }
+      };
+      setConstraint('lenConstraint', val.length >= 8);
+      setConstraint('upperConstraint', /[A-Z]/.test(val));
+      setConstraint('lowerConstraint', /[a-z]/.test(val));
+      setConstraint('numConstraint', /\d/.test(val));
+    });
+  }
 })();
 </script>
 </body>

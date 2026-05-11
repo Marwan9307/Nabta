@@ -15,8 +15,19 @@
             <div class="row g-3">
               <div class="col-md-6"><input class="form-control" name="username" placeholder="Username" value="<?= $data['username'] ?? '' ?>"></div>
               <div class="col-md-6"><input type="email" name="email" class="form-control" placeholder="Email" value="<?= $data['email'] ?? '' ?>"></div>
-              <div class="col-md-6"><input type="password" name="password" class="form-control" placeholder="Password"></div>
-              <div class="col-md-6"><input name="phone" class="form-control" placeholder="Phone (01XXXXXXXXX)" pattern="^(010|011|012|015)\d{8}$"></div>
+              <div class="col-md-6">
+                <div class="input-group mb-1">
+                  <input type="password" name="password" id="registerPassword" class="form-control" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Contains at least one number, one uppercase and lowercase letter, and at least 8 characters" required>
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('registerPassword', this)">See</button>
+                </div>
+                <div class="password-constraints mt-1 small" style="line-height: 1.2;">
+                  <div id="lenConstraint" class="text-danger">&#10007; At least 8 characters</div>
+                  <div id="upperConstraint" class="text-danger">&#10007; One uppercase letter</div>
+                  <div id="lowerConstraint" class="text-danger">&#10007; One lowercase letter</div>
+                  <div id="numConstraint" class="text-danger">&#10007; One number</div>
+                </div>
+              </div>
+              <div class="col-md-6"><input type="tel" name="phone" id="phone" class="form-control" placeholder="Phone (11 digits)" pattern="^\d{11}$" minlength="11" maxlength="11" title="Special constraint: Phone number must be exactly 11 digits" required></div>
               <div class="col-md-6">
                 <select name="city" class="form-select">
                   <option>Cairo</option><option>Giza</option><option>Alexandria</option><option>Aswan</option><option>Luxor</option><option>Port Said</option>

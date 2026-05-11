@@ -1,5 +1,5 @@
 <?php
-
+ // mohem 34an kol ma t3ml action my3ml4 reload lel page w y3ml ajax request bs (refresh)
 class AjaxController {
     public function checkUsername() {
         header("Content-Type: application/json");

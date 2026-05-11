@@ -12,7 +12,8 @@ class AuthController {
 
     public function loginForm() {
         $data = ['page_title' => 'Login', 'email' => '', 'is_logged_in' => Session::isLoggedIn()];
-        if (Session::flash('error')) $data['error'] = Session::flash('error');
+        $error = Session::flash('error');
+        if ($error) $data['error'] = $error;
         require_once __DIR__ . '/../views/auth/login.php';
     }
 
@@ -51,6 +52,10 @@ class AuthController {
 
     public function registerForm() {
         $data = ['page_title' => 'Register', 'is_logged_in' => Session::isLoggedIn()];
+        $error = Session::flash('error');
+        if ($error) {
+            $data['error'] = $error;
+        }
         require_once __DIR__ . '/../views/auth/register.php';
     }
 
@@ -69,8 +74,8 @@ class AuthController {
             exit;
         }
 
-        if ($this->userModel->findByEmail($email)) {
-            Session::flash('error', 'Email already exists');
+        if ($this->userModel->findByEmail($email) || $this->userModel->findByUsername($username)) {
+            Session::flash('error', 'An account with this Email or Username already exists! Please use a different one.');
             header('Location: /auth/register');
             exit;
         }
