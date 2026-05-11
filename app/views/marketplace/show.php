@@ -7,8 +7,13 @@
     <p><?= $data['description'] ?? '' ?></p>
     <h4>EGP <?= $data['price'] ?? 440 ?> <small class="text-muted fs-6">(Negotiation <?= $data['negotiation'] ?? '2%' ?>)</small></h4>
     <div class="d-flex gap-2 flex-wrap">
-      <button class="btn btn-clay" data-bs-toggle="modal" data-bs-target="#buyNowModal">Buy Now</button>
-      <button class="btn btn-sage-outline" data-bs-toggle="modal" data-bs-target="#swapModal">Request Swap</button>
+      <?php if (Session::isLoggedIn()): ?>
+        <button class="btn btn-clay" data-bs-toggle="modal" data-bs-target="#buyNowModal">Buy Now</button>
+        <button class="btn btn-sage-outline" data-bs-toggle="modal" data-bs-target="#swapModal">Request Swap</button>
+      <?php else: ?>
+        <a href="/auth/login" class="btn btn-clay">Buy Now</a>
+        <a href="/auth/login" class="btn btn-sage-outline">Request Swap</a>
+      <?php endif; ?>
     </div>
   </div>
 </div>

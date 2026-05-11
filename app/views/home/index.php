@@ -11,7 +11,11 @@ require_once __DIR__ . '/../layout/header.php';
       <p class="lead"><?= $data['hero_subtitle'] ?? 'Sustainable fashion marketplace for swaps, upcycling, and conscious buying.' ?></p>
       <div class="d-flex gap-2">
         <a href="../marketplace" class="btn btn-clay btn-lg rounded-pill px-4">Shop Now</a>
-        <button class="btn btn-sage-outline btn-lg rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#applyUpcyclerModal">Start Upcycling</button>
+        <?php if (Session::isLoggedIn()): ?>
+          <button class="btn btn-sage-outline btn-lg rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#applyUpcyclerModal">Start Upcycling</button>
+        <?php else: ?>
+          <a href="/auth/login" class="btn btn-sage-outline btn-lg rounded-pill px-4">Start Upcycling</a>
+        <?php endif; ?>
       </div>
     </div>
   </div>
