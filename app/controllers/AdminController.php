@@ -17,12 +17,14 @@ class AdminController {
         $userModel = new UserModel();
         $user = $userModel->findById(Session::userId());
         $pending = $userModel->getPendingUpcyclers();
+        $all_users = $userModel->getAllUsers();
 
         $data = [
             'page_title' => 'Admin',
             'is_logged_in' => true,
             'avatar' => $user['profile_picture'] ?: 'https://placehold.co/40x40',
             'pending_upcyclers' => $pending,
+            'all_users' => $all_users,
             'notifications' => [],
             'chat_users' => [],
         ];
@@ -62,6 +64,44 @@ class AdminController {
         $userId = $_POST['user_id'] ?? 0;
         $userModel = new UserModel();
         // custom model logic: $userModel->updateStatus($userId, 'active');
+        header('Location: /admin');
+        exit;
+    }
+
+    public function makeAdmin() {
+        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
+        $userId = $_POST['user_id'] ?? 0;
+        $userModel = new UserModel();
+        
+        $db = Database::get('users');
+        $stmt = $db->prepare("UPDATE users SET role = 'admin' WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        $chatModel = new ChatModel();
+        $chatModel->createNotification($userId, 'You have been promoted to Admin!', 'system');
+
+        header('Location: /admin');
+        exit;
+    }
+
+    public function revokeAdmin() {
+        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
+        $userId = $_POST['user_id'] ?? 0;
+        
+        // Prevent revoking own admin access
+        if ($userId == Session::userId()) {
+            Session::flash('error', 'You cannot revoke your own admin rights.');
+            header('Location: /admin');
+            exit;
+        }
+
+        $db = Database::get('users');
+        $stmt = $db->prepare("UPDATE users SET role = 'registered' WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        $chatModel = new ChatModel();
+        $chatModel->createNotification($userId, 'Your Admin privileges have been revoked.', 'system');
+
         header('Location: /admin');
         exit;
     }

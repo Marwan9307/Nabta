@@ -41,8 +41,9 @@ $chats = $data['chat_users'] ?? [];
         <?php if (!$loggedIn): ?>
           <a href="/auth/register" class="btn btn-link text-decoration-none">Register</a>
           <a href="/auth/login" class="btn btn-clay rounded-pill px-3">Login</a>
-        <?php else: ?>
-          <a href="/item/closet" class="btn btn-sage-outline rounded-pill px-3">My Closet</a>
+        <?php else: ?>            <?php if (isset($_SESSION['user_role']) && in_array(strtolower($_SESSION['user_role']), ['admin', 'moderator'])): ?>
+              <a href="/admin" class="btn btn-warning rounded-pill px-3 fw-bold text-dark" style="background:#c4956a; border-color:#c4956a; color:#fff !important;">Admin Panel</a>
+            <?php endif; ?>          <a href="/item/closet" class="btn btn-sage-outline rounded-pill px-3">My Closet</a>
           <a href="/order" class="btn btn-sage-outline rounded-pill px-3">Orders</a>
           <a href="/swap" class="btn btn-sage-outline rounded-pill px-3">Swaps</a>
           <button class="icon-btn spring" data-bs-toggle="offcanvas" data-bs-target="#chatOffcanvas" title="Chat">💬</button>

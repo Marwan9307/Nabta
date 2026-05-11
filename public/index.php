@@ -67,6 +67,8 @@ $router->post('/upcycle/log', 'UpcycleController@logTransformation');
 $router->get('/admin', 'AdminController@index');
 $router->post('/admin/approve-upcycler', 'AdminController@approveUpcycler');
 $router->post('/admin/reject-upcycler', 'AdminController@rejectUpcycler');
+$router->post('/admin/make-admin', 'AdminController@makeAdmin');
+$router->post('/admin/revoke-admin', 'AdminController@revokeAdmin');
 $router->get('/admin/reports', 'AdminController@reports');
 
 $router->get('/moderator', 'ModeratorController@index');
