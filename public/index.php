@@ -21,6 +21,9 @@ $router->get('/auth/preferences', 'AuthController@preferencesForm');
 $router->post('/auth/preferences', 'AuthController@savePreferences');
 $router->get('/auth/logout', 'AuthController@logout');
 
+// AJAX Routes
+$router->post('/ajax/check-username', 'AjaxController@checkUsername');
+
 $router->get('/profile', 'ProfileController@index');
 $router->get('/profile/{id}', 'ProfileController@index');
 $router->get('/profile/apply-role', 'ProfileController@applyRoleForm');
