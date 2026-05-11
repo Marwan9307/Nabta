@@ -22,12 +22,30 @@
     </div>
     <div class="col-12">
       <label class="d-block mb-2">Favorite Palette</label>
-      <div class="d-flex gap-3">
-        <label><input type="radio" name="color_palette" value="earthy" class="d-none"><div class="color-swatch" style="background:linear-gradient(135deg,#5c7a5c,#c4956a)" title="Earthy"></div></label>
-        <label><input type="radio" name="color_palette" value="cool" class="d-none"><div class="color-swatch" style="background:linear-gradient(135deg,#8aa7b5,#a8b89a)" title="Cool"></div></label>
-        <label><input type="radio" name="color_palette" value="neutral" class="d-none"><div class="color-swatch" style="background:linear-gradient(135deg,#ddd5c9,#b8aea1)" title="Neutral"></div></label>
-        <label><input type="radio" name="color_palette" value="bold" class="d-none"><div class="color-swatch" style="background:linear-gradient(135deg,#d4a5a5,#e8c4b0)" title="Bold"></div></label>
+      <div class="d-flex gap-3 palette-selector">
+        <label>
+          <input type="radio" name="color_palette" value="earthy" class="d-none peer-checked">
+          <div class="color-swatch ring-selected" style="background:linear-gradient(135deg,#5c7a5c,#c4956a)" title="Earthy"></div>
+        </label>
+        <label>
+          <input type="radio" name="color_palette" value="cool" class="d-none peer-checked">
+          <div class="color-swatch ring-selected" style="background:linear-gradient(135deg,#8aa7b5,#a8b89a)" title="Cool"></div>
+        </label>
+        <label>
+          <input type="radio" name="color_palette" value="neutral" class="d-none peer-checked">
+          <div class="color-swatch ring-selected" style="background:linear-gradient(135deg,#ddd5c9,#b8aea1)" title="Neutral"></div>
+        </label>
+        <label>
+          <input type="radio" name="color_palette" value="bold" class="d-none peer-checked">
+          <div class="color-swatch ring-selected" style="background:linear-gradient(135deg,#d4a5a5,#e8c4b0)" title="Bold"></div>
+        </label>
       </div>
+      <style>
+        .peer-checked:checked + .ring-selected {
+          outline: 3px solid #5C7A5C;
+          outline-offset: 2px;
+        }
+      </style>
     </div>
     <div class="col-12"><button class="btn btn-clay" type="submit">Save Preferences</button></div>
   </div>

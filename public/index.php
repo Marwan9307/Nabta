@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set("Africa/Cairo");
+
 require_once __DIR__ . '/../app/config/session.php';
 require_once __DIR__ . '/../app/config/database.php';
 require_once __DIR__ . '/../app/config/encryption.php';

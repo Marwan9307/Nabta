@@ -128,6 +128,23 @@ class OrderController {
         $itemModel = new ItemModel();
         $item = $itemModel->findById($itemId);
         if (!$item || $item['item_status'] !== 'available') { header('Location: /marketplace'); exit; }
+        
+        // Ensure offer is not unreasonably lower than negotiated threshold or at least strictly not lower than buyer's base price constraint
+        if ($offer > 0 && $offer < $item['item_price'] && $item['negotiation_percent'] == 0) {
+            // If they can't negotiate, it's strictly rejected
+            Session::flash('error', 'Offer price cannot be lower than the asking price.');
+            header('Location: /marketplace/show/' . $itemId);
+            exit;
+        }
+
+        if ($offer > 0) {
+            $minPrice = $item['item_price'] * (1 - ($item['negotiation_percent'] / 100));
+            if ($offer < $minPrice) {
+                Session::flash('error', 'The seller rejected your offer. It is lower than the accepted negotiation limit.');
+                header('Location: /marketplace/show/' . $itemId);
+                exit;
+            }
+        }
 
         $price = $offer > 0 ? $offer : $item['item_price'];
         $fee = round($price * 0.05, 2);
@@ -146,12 +163,7 @@ class OrderController {
         $shippingModel = new ShippingModel();
         $shippingModel->create($orderId, 50);
 
-        $analytics = new AnalyticsModel();
-        if ($item['material_type'] && $item['item_weight']) {
-            $saving = $analytics->calculateCarbonSaving($item['material_type'], $item['item_weight']);
-            $analytics->logCarbonSaving(Session::userId(), $itemId, $saving['co2_saved'], $saving['water_saved'], 'purchase');
-        }
-
+        // Eco points are awarded based on items exchanging hands
         $userModel = new UserModel();
         $userModel->updateEcoPoints(Session::userId(), 10);
         $userModel->updateEcoPoints($item['owner_id'], 15);

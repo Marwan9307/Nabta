@@ -122,6 +122,7 @@ class ItemController {
             $analytics->logCarbonSaving(Session::userId(), $itemId, $saving['co2_saved'], $saving['water_saved'], 'listing');
         }
 
+        // Eco points are only awarded upon successful transaction, not just purely for posting on the market.
         header('Location: /item/closet');
         exit;
     }

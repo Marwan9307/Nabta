@@ -49,10 +49,18 @@
   });
 
   const toggle = document.getElementById('themeToggle');
+  
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('theme-dark');
+    if (toggle) toggle.textContent = '🌙';
+  }
+
   if (toggle) {
     toggle.addEventListener('click', () => {
-      const dark = body.classList.toggle('theme-dark');
+      const dark = document.documentElement.classList.toggle('theme-dark');
+      document.body.classList.toggle('theme-dark', dark);
       toggle.textContent = dark ? '🌙' : '🌞';
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
     });
   }
 
