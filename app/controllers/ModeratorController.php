@@ -51,4 +51,24 @@ class ModeratorController {
         header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/home'));
         exit;
     }
+
+    // --- SSD Methods: Resolve Communication Conflict ---
+    public function submitReport($report) { }
+
+    public function resolveCommConflicts($reportID) {
+        $reportDetails = $this->getReportDetails($reportID);
+        $this->analyzeReport($reportDetails);
+        // If violation -> banAccount
+        $this->banAccount($reportDetails['target_id'] ?? 0);
+        $this->createNotification();
+        $this->fillData([]);
+        $this->notifyUser();
+    }
+
+    private function getReportDetails($reportID) { return ['target_id' => 1]; }
+    private function analyzeReport($report) {}
+    private function banAccount($troubleMaker) {}
+    private function createNotification() {}
+    private function fillData($data) {}
+    private function notifyUser() {}
 }

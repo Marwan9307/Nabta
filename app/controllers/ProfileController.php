@@ -39,6 +39,19 @@ class ProfileController {
         require_once __DIR__ . '/../views/profile/index.php';
     }
 
+    // --- SSD Methods: View Trust Score ---
+    public function viewProfile() {
+        echo "Profile View requested";
+    }
+
+    public function getTrustScore() {
+        echo "Trust score accessed";
+    }
+
+    public function getRank() {
+        echo "Rank & Badge determined";
+    }
+
     public function applyRoleForm() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
         $userModel = new UserModel();

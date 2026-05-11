@@ -86,6 +86,25 @@ class SwapController {
         require_once __DIR__ . '/../views/swap/show.php';
     }
 
+    // --- SSD Methods: Swap Item ---
+    public function requestSwap($offeredItem, $requestedItem) {
+        // Entry point for Swap Initiation
+        echo "Swap requested.";
+    }
+
+    public function getValueDifference() {
+        // System internal check
+        return 0; // return float
+    }
+
+    public function proposeCounterOffer($newOfferedItem) {
+        echo "Counter offer proposed: " . $newOfferedItem;
+    }
+
+    public function finalizeAtomicTransaction() {
+        echo "Swap transaction finalized.";
+    }
+
     public function request() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
         $offeredItemId = $_POST['offered_item_id'] ?? 0;

@@ -42,4 +42,52 @@ class ShippingController {
         // Corresponding to Use Case: Optimize Shipping Route
         echo "Shipping routes optimized.";
     }
+
+    // --- SSD Methods: Ship Order ---
+    public function preparePackage($transaction) {
+        // Sequence: preparePackage
+        echo "Package prepared.";
+    }
+
+    public function determineShipMethod($transaction) {
+        // Sequence: determineShipMethod
+        return "pickup"; // or drop
+    }
+
+    public function requestPickup($transaction) {
+        // Sequence: requestPickup
+        echo "Pickup requested.";
+    }
+
+    public function dropPackage($transaction) {
+        // Sequence: dropPackage
+        echo "Package dropped.";
+    }
+
+    // --- Additional SSD Methods: Ship Order & Delivery Failer ---
+    public function generateLableAndTrakingNumber($order) { }
+    
+    public function UpdateStatus($oreder, $status) { }
+
+    public function confirmDelivery($transaction) { }
+
+    private function creatNotification($user) { }
+    private function fillData($data) { }
+    private function notifyUser() { }
+
+    public function creatReport($user) {
+        return "UserReport";
+    }
+
+    public function fillContent($data) { }
+
+    public function submitReport($report) { 
+        // Calls report services
+    }
+
+    public function manageRollback($report) {
+        // Calls payment gateway
+    }
+
+    public function receiveRefund() { }
 }

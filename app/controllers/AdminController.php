@@ -94,4 +94,21 @@ class AdminController {
         ];
         require_once __DIR__ . '/../views/admin/reports.php';
     }
+
+    // --- SSD Methods: Resolve Conflict (Transaction) ---
+    public function resolveTransactionConflicts($reportID) {
+        $status = $this->getReportDetails($reportID);
+        // resolve logic
+        $this->creatNotification(Session::userId());
+        $this->fillData([]);
+        $this->notifyuser();
+    }
+
+    private function getReportDetails($reportID) {
+        return "Report Details";
+    }
+
+    private function creatNotification($user) {}
+    private function fillData($data) {}
+    private function notifyuser() {}
 }

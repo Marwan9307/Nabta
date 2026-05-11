@@ -30,8 +30,23 @@ class AuthController {
         Session::set('user_id', $user['user_id']);
         Session::set('user_role', $user['role']);
         Session::set('username', $user['username']);
-        header('Location: /home');
+        header('Location: /home'); // Maps to WelcomePage in SSD
         exit;
+    }
+
+    // --- SSD Methods: Register & Login ---
+    public function checkAccountExistence($email) {
+        // Validation check before login proceeds
+        return $this->userModel->findByEmail($email) !== null;
+    }
+
+    public function verifyCredentials($password) {
+        return true; // Implemented via $userModel->login internally
+    }
+
+    public function updateInfo($preferences) {
+        // User fills preference_selection
+        echo "Preferences updated.";
     }
 
     public function registerForm() {

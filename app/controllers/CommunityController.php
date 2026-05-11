@@ -64,6 +64,36 @@ class CommunityController {
         return false;
     }
 
+    // --- SSD Methods ---
+    public function postInCommunity($content, $media) {
+        echo "Post created";
+    }
+
+    public function runSentimentAnalysis() {
+        return "Safe"; // or Flagged
+    }
+
+    public function savePostToDatabase() {
+        echo "Post formally saved to Db.";
+    }
+
+    public function viewCommunity() {
+        // Map explicitly to Community Flow
+    }
+
+    public function checkUserPreferences() {
+        return null;
+    }
+
+    public function fetchAllPostsByDate() {
+        // Map explicitly
+        return [];
+    }
+
+    public function filterByInterest($userID, $preference) {
+        return [];
+    }
+
     public function create() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
 

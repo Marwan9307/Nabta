@@ -25,4 +25,32 @@ class PaymentController {
         $paymentGateway->executeRefund($transactionId);
         echo "Transaction " . htmlspecialchars($transactionId) . " rolled back successfully.";
     }
+
+    // --- SSD Methods ---
+    public function startPayment($transaction) {
+        echo "Payment started.";
+    }
+
+    public function determinePaymentMethod() {
+        return ["Credit Card", "Wallet", "Eco-Points"];
+    }
+
+    public function enterData($data) {
+        $this->createNotification();
+        $this->createEscrow($data['transaction']);
+    }
+
+    private function createNotification() {
+        // delegates to Notification
+    }
+
+    private function fillData($data) {}
+
+    private function notifyUser() {}
+
+    private function createEscrow($transaction) {
+        $this->holdFunds(200);
+    }
+
+    private function holdFunds($money) {}
 }

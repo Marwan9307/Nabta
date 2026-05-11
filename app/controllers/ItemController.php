@@ -42,6 +42,24 @@ class ItemController {
         echo "AI has generated outfit recommendations based on your closet.";
     }
 
+    // --- SSD Methods ---
+    public function manageVirtualCloset() {
+        // SSD VirtualCloset flow tracking
+        echo "Virtual closet managed.";
+    }
+
+    public function addItem($item) {
+        $this->updateStatus('LOCKED');
+    }
+
+    public function removeItem($item) {
+        $this->updateStatus('UNLOCKED');
+    }
+
+    private function updateStatus($status) {
+        echo "Item status updated to " . $status;
+    }
+
     public function createBoard() {
         // Use Case: Create Board
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
@@ -173,4 +191,21 @@ class ItemController {
         header('Location: /item/closet');
         exit;
     }
+
+    // --- SSD Methods: Item Shopping & Checks ---
+    public function checkAvailability($item) {
+        return true;
+    }
+
+    public function lockDescription($item) {
+        // Locks the item description
+    }
+
+    public function creatReport($shopper) {
+        return "UserReport created";
+    }
+
+    public function fillContent($data) {}
+
+    public function submitReport($report) {}
 }

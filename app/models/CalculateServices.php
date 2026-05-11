@@ -35,4 +35,13 @@ class CalculateServices {
     public function calculateTotal($transaction_ID) {
         return 150; // Dummy int total
     }
+
+    // --- SSD Additional Methods ---
+    public function calculateReturnCoverage($transaction_ID) {
+        return 5; // SSD: Calculate Fees
+    }
+
+    public function calculateTotalPrice($transaction_ID) {
+        return 150; // SSD: Calculate Fees
+    }
 }

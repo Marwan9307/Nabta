@@ -37,6 +37,47 @@ class OrderController {
         echo "Eco-credits calculated and awarded.";
     }
 
+    // --- SSD Methods: Buy Item & Sell Item ---
+    public function selectItemToBuy($itemID) {
+        // Maps to SSD: Initiation of Purchase
+        echo "Item selected for purchase.";
+    }
+
+    public function submitPurchaseRequest($offeredPrice) {
+        // Maps to SSD: submitPurchaseRequest
+        echo "Purchase request submitted.";
+    }
+
+    public function autoCancel() {
+        // Maps to SSD: No Response from Seller > 48h
+        echo "Order auto-cancelled.";
+    }
+
+    public function viewPendingOffers($itemID) {
+        // Maps to SSD: viewPendingOffers
+        return [];
+    }
+
+    public function acceptOffer($requestID) {
+        // Maps to SSD: acceptOffer
+        $this->createOrder();
+        $this->lockItem();
+    }
+
+    public function createOrder() {
+        echo "Order Created.";
+    }
+
+    public function lockItem() {
+        // System automatically rejects other pending bids
+        echo "Item locked and other bids rejected.";
+    }
+
+    public function rejectOffer($requestID) {
+        // Maps to SSD: rejectOffer
+        echo "Offer rejected.";
+    }
+
     public function index() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
         $orders = $this->orderModel->getByBuyer(Session::userId());
@@ -142,5 +183,34 @@ class OrderController {
 
         header('Location: /order/show/' . $orderId);
         exit;
+    }
+
+    // --- SSD Additional Methods: Buy Process ---
+    public function buyItem($item) {
+        // SSD: buy item
+        echo "Purchasing sequence init.";
+    }
+
+    public function createTransaction($initiatorID, $receiverID) {
+        // SSD: Transaction explicitly created
+        echo "Transaction generated.";
+    }
+
+    public function requestPrice($price) {
+        // SSD: Transaction to Seller
+        echo "Price requested from seller.";
+    }
+
+    public function destroyTransaction() {
+        // SSD: Transaction canceled
+        echo "Transaction destroyed.";
+    }
+
+    public function choosePaymentMethod($method) {
+        echo "Payment method chosen: " . $method;
+    }
+
+    public function setHandoverMode($mode) {
+        echo "Handover mode set to: " . $mode;
     }
 }

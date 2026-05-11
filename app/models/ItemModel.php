@@ -6,11 +6,11 @@ class ItemModel {
     private $db;
 
     public function __construct() {
-        $this->db = Database::get('items');
+        $this->db = Database::get('item');
     }
 
     public function create($data) {
-        $stmt = $this->db->prepare("INSERT INTO items (owner_id, title, item_description, material_type, item_photo, item_weight, is_upcycled, item_price, negotiation_percent, listing_type, category, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO item (owner_id, title, item_description, material_type, item_photo, item_weight, is_upcycled, item_price, negotiation_percent, listing_type, category, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $data['owner_id'], $data['title'], $data['description'] ?? '',
             $data['material_type'] ?? '', $data['item_photo'] ?? '',
@@ -23,7 +23,7 @@ class ItemModel {
     }
 
     public function findById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM items WHERE item_id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM item WHERE item_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -39,23 +39,23 @@ class ItemModel {
         }
         if (empty($fields)) return false;
         $values[] = $id;
-        $stmt = $this->db->prepare("UPDATE items SET " . implode(', ', $fields) . " WHERE item_id = ?");
+        $stmt = $this->db->prepare("UPDATE item SET " . implode(', ', $fields) . " WHERE item_id = ?");
         return $stmt->execute($values);
     }
 
     public function delete($id) {
-        $stmt = $this->db->prepare("DELETE FROM items WHERE item_id = ?");
+        $stmt = $this->db->prepare("DELETE FROM item WHERE item_id = ?");
         return $stmt->execute([$id]);
     }
 
     public function getByOwner($ownerId) {
-        $stmt = $this->db->prepare("SELECT * FROM items WHERE owner_id = ? ORDER BY created_at DESC");
+        $stmt = $this->db->prepare("SELECT * FROM item WHERE owner_id = ? ORDER BY created_at DESC");
         $stmt->execute([$ownerId]);
         return $stmt->fetchAll();
     }
 
     public function getMarketplaceItems($filters = []) {
-        $sql = "SELECT * FROM items WHERE item_status = 'available'";
+        $sql = "SELECT * FROM item WHERE item_status = 'available'";
         $params = [];
 
         if (!empty($filters['category'])) {
@@ -129,7 +129,7 @@ class ItemModel {
     }
 
     public function getClosetItems($ownerId) {
-        $stmt = $this->db->prepare("SELECT i.* FROM virtual_closet vc JOIN items i ON vc.item_id = i.item_id WHERE vc.owner_id = ? ORDER BY vc.added_at DESC");
+        $stmt = $this->db->prepare("SELECT i.* FROM virtual_closet vc JOIN item i ON vc.item_id = i.item_id WHERE vc.owner_id = ? ORDER BY vc.added_at DESC");
         $stmt->execute([$ownerId]);
         return $stmt->fetchAll();
     }

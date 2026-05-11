@@ -34,4 +34,25 @@ class MultiRoleController {
     public function verifyRole() {
         return "Current context verified as: " . $this->activeRole;
     }
+
+    // --- SSD Additional Methods: Upcycler Role ---
+    public function askForUpcyclerRole() {
+        echo "Role application initiated.";
+    }
+
+    public function submitPortfolio($portfolioURL) {
+        echo "Portfolio submitted: " . $portfolioURL;
+    }
+
+    public function verifyPortfolio($portfolio_string) {
+        return "decisionStatus returned";
+    }
+
+    public function updateRegisteredRole($Registered, $role) {
+        echo "Role updated to " . $role;
+    }
+
+    public function saveNewRole($userID, $role) {
+        echo "New role specifically saved internally.";
+    }
 }

@@ -31,4 +31,37 @@ class AnalyticsController {
         // Corresponding to Use Case: Generate Market Report
         echo "Market report generated.";
     }
+
+    // --- SSD Methods: DataAnalyst Reports ---
+    public function generateCarbonSavingsReport() {
+        $report = $this->createReport("Carbon Savings");
+        $transactions = $this->getAllTransaction();
+        foreach ($transactions as $transaction) {
+            $co2 = $this->calculateCO2($transaction);
+            $water = $this->calculateWaterEqu($transaction);
+        }
+        $this->fillContent(["data" => "carbon"]);
+        $this->submitReport($report);
+    }
+
+    public function generateWeeklyMarketTrendReport() {
+        $report = $this->createReport("Weekly Trends");
+        $transactions = $this->getAllTransaction();
+        $this->processTransactionInformation($transactions);
+        $this->fillContent(["data" => "trends"]);
+        $this->submitReport($report);
+    }
+
+    private function createReport($report) { return $report; }
+    private function getAllTransaction() { return []; }
+    private function calculateCO2($transaction) { return 12.4; }
+    private function calculateWaterEqu($transaction) { return 15.6; }
+    private function fillContent($data) {}
+    private function submitReport($report) {}
+    private function processTransactionInformation($transactions) {}
+
+    // --- Calculator Services ---
+    public function calculateTrustScore($user) { return 5; }
+    public function calculateEcoPoints($user) { return 12; }
+    public function calculateTotalPrice($transaction) { return 560; }
 }

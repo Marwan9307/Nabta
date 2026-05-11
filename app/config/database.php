@@ -5,7 +5,7 @@ class Database {
 
     private static $databases = [
         'users'       => __DIR__ . '/../../database/users.db',
-        'items'       => __DIR__ . '/../../database/items.db',
+        'item'       => __DIR__ . '/../../database/items.db',
         'orders'      => __DIR__ . '/../../database/orders.db',
         'community'   => __DIR__ . '/../../database/community.db',
         'swaps'       => __DIR__ . '/../../database/swaps.db',

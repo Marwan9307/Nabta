@@ -42,6 +42,39 @@ class MarketplaceController {
         require_once __DIR__ . '/../views/marketplace/index.php';
     }
 
+    // --- SSD Methods: Browse Marketplace ---
+    public function browseMarketplace() {
+        echo "Marketplace opened.";
+    }
+
+    public function searchItem($itemCriteria) {
+        $this->queryDatabase();
+    }
+
+    private function queryDatabase() {}
+
+    public function filterItems($gender, $material, $category) {
+        $this->applyFilters();
+    }
+
+    private function applyFilters() {}
+
+    public function selectItem($itemID) {
+        // Maps to getItemInfo and fetching details
+    }
+
+    public function assessItem($Item) {
+        // Assess item logic mapped to MarketPlace controller
+    }
+
+    public function browseMarketPage() {
+        echo "Browse market page.";
+    }
+
+    public function getTrustScore() {
+        // Fetch Seller Reliability Data
+    }
+
     public function show($id) {
         $item = $this->itemModel->findById($id);
         if (!$item) { header('Location: /marketplace'); exit; }
