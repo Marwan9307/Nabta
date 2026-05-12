@@ -78,10 +78,6 @@
     <input name="price" type="number" class="form-control mb-2" placeholder="Price (EGP)" required>
     <input name="weight" type="number" step="0.1" class="form-control mb-2" placeholder="Weight (kg)">
     <select name="listing_type" class="form-select mb-2"><option value="available">For Sale & Swap</option><option value="sale_only">Sale Only</option><option value="swap_only">Swap Only</option></select>
-    <div class="input-group mb-2">
-      <input name="negotiation" type="number" min="0" max="100" class="form-control" placeholder="Negotiation percentage (e.g., 10)">
-      <span class="input-group-text">%</span>
-    </div>
     <input type="file" name="item_photo" class="form-control mb-2">
     <label class="form-check-label mb-2"><input type="checkbox" name="is_upcycled" class="form-check-input"> Upcycled item</label>
     
