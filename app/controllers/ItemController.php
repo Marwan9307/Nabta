@@ -94,7 +94,13 @@ class ItemController {
 
     public function createForm() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
-        $data = ['page_title' => 'Create Item', 'is_logged_in' => true, 'notifications' => [], 'chat_users' => []];
+        $data = [
+            'page_title' => 'Create Item',
+            'is_logged_in' => true,
+            'notifications' => [],
+            'chat_users' => [],
+            'current_role' => Session::userRole(),
+        ];
         $userModel = new UserModel();
         $user = $userModel->findById(Session::userId());
         $data['avatar'] = $user['profile_picture'] ?: 'https://placehold.co/40x40';
@@ -107,11 +113,35 @@ class ItemController {
         $tearCheck = $_POST['tear_check'] ?? '';
         $cleanlinessCheck = $_POST['cleanliness_check'] ?? '';
         $usageFrequency = $_POST['usage_frequency'] ?? '';
+        $isUpcycled = isset($_POST['is_upcycled']) && in_array(strtolower((string)$_POST['is_upcycled']), ['1', 'yes', 'true', 'on'], true);
+        $currentRole = Session::userRole();
 
         if (empty($tearCheck) || empty($cleanlinessCheck) || empty($usageFrequency)) {
             Session::flash('error', 'You must complete the full condition assessment (Tear Check, Cleanliness, Usage Frequency) prior to adding an item.');
             header("Location: /item/closet");
             exit;
+        }
+
+        if ($isUpcycled && $currentRole !== 'upcycler') {
+            Session::flash('error', 'Only users with the upcycler role can create an upcycled item.');
+            header('Location: /item/create');
+            exit;
+        }
+
+        if ($isUpcycled) {
+            foreach (['added_materials', 'story'] as $field) {
+                if (empty(trim((string)($_POST[$field] ?? '')))) {
+                    Session::flash('error', 'Please complete all upcycling requirements before submitting the item.');
+                    header('Location: /item/create');
+                    exit;
+                }
+            }
+
+            if (empty($_FILES['before_photo']['name']) || empty($_FILES['after_photo']['name'])) {
+                Session::flash('error', 'Upcycled items require both a before photo and an after photo.');
+                header('Location: /item/create');
+                exit;
+            }
         }
 
         $photo = '';
@@ -130,7 +160,7 @@ class ItemController {
             'material_type' => $_POST['material_type'] ?? '',
             'item_photo' => $photo,
             'item_weight' => $_POST['weight'] ?? 0,
-            'is_upcycled' => isset($_POST['is_upcycled']) ? 1 : 0,
+            'is_upcycled' => $isUpcycled ? 1 : 0,
             'item_price' => $_POST['price'] ?? 0,
             'negotiation_percent' => $_POST['negotiation'] ?? 0,
             'listing_type' => $_POST['listing_type'] ?? 'available',
@@ -139,17 +169,54 @@ class ItemController {
         ]);
 
         $this->itemModel->addToCloset(Session::userId(), $itemId);
+
+        if ($isUpcycled) {
+            $upcycleDir = __DIR__ . '/../../public/uploads/upcycle';
+            if (!is_dir($upcycleDir)) mkdir($upcycleDir, 0755, true);
+
+            $beforePhoto = '';
+            $afterPhoto = '';
+
+            if (isset($_FILES['before_photo']) && $_FILES['before_photo']['error'] === 0) {
+                $ext = pathinfo($_FILES['before_photo']['name'], PATHINFO_EXTENSION);
+                $beforePhoto = '/uploads/upcycle/' . uniqid('before_') . '.' . $ext;
+                move_uploaded_file($_FILES['before_photo']['tmp_name'], __DIR__ . '/../../public' . $beforePhoto);
+            }
+
+            if (isset($_FILES['after_photo']) && $_FILES['after_photo']['error'] === 0) {
+                $ext = pathinfo($_FILES['after_photo']['name'], PATHINFO_EXTENSION);
+                $afterPhoto = '/uploads/upcycle/' . uniqid('after_') . '.' . $ext;
+                move_uploaded_file($_FILES['after_photo']['tmp_name'], __DIR__ . '/../../public' . $afterPhoto);
+            }
+
+            $analytics = new AnalyticsModel();
+            $saving = $analytics->calculateCarbonSaving($_POST['material_type'] ?? 'cotton', $_POST['weight'] ?? 0);
+
+            $this->itemModel->saveUpcyclingLog([
+                'item_id' => $itemId,
+                'artisan_id' => Session::userId(),
+                'mentor_id' => $_POST['mentor_id'] ?? null,
+                'before_photo' => $beforePhoto,
+                'after_photo' => $afterPhoto,
+                'upcycling_story' => $_POST['story'] ?? '',
+                'added_materials' => $_POST['added_materials'] ?? '',
+                'water_saved' => $saving['water_saved'],
+                'co2_saved' => $saving['co2_saved'],
+            ]);
+
+            $analytics->logCarbonSaving(Session::userId(), $itemId, $saving['co2_saved'], $saving['water_saved'], 'upcycle');
+        }
         
         // Link the condition assessment grading!
         $this->itemModel->assessItem($itemId, $tearCheck, $cleanlinessCheck, $usageFrequency);
 
-        if (!empty($_POST['material_type']) && !empty($_POST['weight'])) {
+        if (!$isUpcycled && !empty($_POST['material_type']) && !empty($_POST['weight'])) {
             $analytics = new AnalyticsModel();
             $saving = $analytics->calculateCarbonSaving($_POST['material_type'], $_POST['weight']);
             $analytics->logCarbonSaving(Session::userId(), $itemId, $saving['co2_saved'], $saving['water_saved'], 'listing');
         }
 
-        // Eco points are only awarded upon successful transaction, not just purely for posting on the market.
+        Session::flash('success', $isUpcycled ? 'Upcycled item added successfully.' : 'Item added successfully.');
         header('Location: /item/closet');
         exit;
     }
