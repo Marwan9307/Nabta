@@ -1,6 +1,14 @@
 <?php $data['page_title'] = $data['page_title'] ?? 'Profile'; require_once __DIR__ . '/../layout/header.php'; ?>
 <div class="card-eco p-4 text-center">
-  <img src="<?= $data['avatar'] ?? 'https://placehold.co/100x100' ?>" width="100" height="100" class="rounded-circle mb-2">
+  <div class="position-relative d-inline-block mb-3">
+    <img src="<?= $data['avatar'] ?? 'https://placehold.co/100x100' ?>" width="100" height="100" class="rounded-circle">
+    <form action="/profile/updatePhoto" method="POST" enctype="multipart/form-data" class="d-inline">
+      <input type="file" name="avatar" id="avatarInput" accept="image/*" class="d-none" onchange="this.form.submit()">
+      <button type="button" class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0 border shadow-sm" style="width: 32px; height: 32px;" title="Edit Profile Photo" onclick="document.getElementById('avatarInput').click()">
+        📷
+      </button>
+    </form>
+  </div>
   <h3><?= $data['name'] ?? 'NABTA User' ?></h3>
   <p>Trust Score: <?= $data['trust_score'] ?? '★★★★☆' ?> · Eco Points: <span id="ecoPoints"><?= $data['eco_points'] ?? 480 ?></span></p>
   <div class="snake-plant-stage">

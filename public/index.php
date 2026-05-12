@@ -31,6 +31,7 @@ $router->get('/profile/{id}', 'ProfileController@index');
 $router->get('/profile/apply-role', 'ProfileController@applyRoleForm');
 $router->post('/profile/apply-role', 'ProfileController@applyRole');
 $router->post('/profile/update', 'ProfileController@update');
+$router->post('/profile/updatePhoto', 'ProfileController@updatePhoto');
 
 $router->get('/marketplace', 'MarketplaceController@index');
 $router->get('/marketplace/show/{id}', 'MarketplaceController@show');

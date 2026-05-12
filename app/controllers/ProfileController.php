@@ -93,4 +93,22 @@ class ProfileController {
         header('Location: /profile');
         exit;
     }
+
+    public function updatePhoto() {
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === 0) {
+            $ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+            $profile_picture = '/uploads/avatars/' . uniqid() . '.' . $ext;
+            $dir = __DIR__ . '/../../public/uploads/avatars';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../public' . $profile_picture);
+            
+            $data = ['profile_picture' => $profile_picture];
+            $this->userModel->updateProfile(Session::userId(), $data);
+        }
+
+        header('Location: /profile');
+        exit;
+    }
 }
