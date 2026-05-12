@@ -113,7 +113,7 @@ require_once __DIR__ . '/../layout/header.php';
                                         <div class="small text-uppercase tracking-wider text-muted mb-1" style="font-size: 10px;"><?= htmlspecialchars($item['condition_grade'] ?? 'Good') ?></div>
                                         <h6 class="text-forest serif mb-2"><?= htmlspecialchars($item['title'] ?? 'Upcycled Piece') ?></h6>
                                         <div class="d-flex justify-content-between align-items-center mt-3">
-                                            <span class="fw-bold text-forest" style="font-size: 14px;">EGP <?= number_format($item['item_price'] ?? 0) ?></span>
+                                            <span class="fw-bold text-forest" style="font-size: 14px;"> EGP <?= number_format((float)($item['item_price'] ?? 0))?> </span>
                                             <?php if ($item['listing_type'] == 1 || $item['listing_type'] == 2): ?>
                                                 <span class="small text-muted" style="font-size: 11px;">Swap</span>
                                             <?php endif; ?>
