@@ -102,17 +102,25 @@ class OrderController {
     public function show($id) {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
         $order = $this->orderModel->findById($id);
-        if (!$order) { header('Location: /order'); exit; }
+        if (!$order) { 
+            Session::flash('error', 'Order not found.');
+            header('Location: /order'); 
+            exit; 
+        }
 
         $userModel = new UserModel();
         $user = $userModel->findById(Session::userId());
+        
+        $items = $this->orderModel->getOrderItems($id);
 
         $data = [
             'page_title' => 'Order Details',
             'is_logged_in' => true,
             'avatar' => $user['profile_picture'] ?: 'https://placehold.co/40x40',
             'order_id' => $order['order_id'],
-            'status' => $order['order_status'],
+            'order' => $order,
+            'items' => $items,
+            'status' => $order['order_status'] ?? 'pending',
             'notifications' => [],
             'chat_users' => [],
         ];
@@ -155,16 +163,19 @@ class OrderController {
 
         $offer = min($offer, $item['item_price']);
 
-        if ($offer > 0 && $offer < $item['item_price'] && $item['negotiation_percent'] == 0) {
-            Session::flash('error', 'Offer price cannot be lower than the asking price.');
-            header('Location: /marketplace/show/' . $itemId);
-            exit;
-        }
-
-        if ($offer > 0) {
+        // Validate negotiation limit
+        if ($offer > 0 && $offer < $item['item_price']) {
+            if ($item['negotiation_percent'] == 0) {
+                Session::flash('error', '❌ This item is not negotiable. You must pay the full asking price.');
+                header('Location: /marketplace/show/' . $itemId);
+                exit;
+            }
+            
             $minPrice = $item['item_price'] * (1 - ($item['negotiation_percent'] / 100));
             if ($offer < $minPrice) {
-                Session::flash('error', 'The seller rejected your offer. It is lower than the accepted negotiation limit.');
+                $minAcceptable = number_format($minPrice, 2);
+                $negotiationRange = $item['negotiation_percent'] . '%';
+                Session::flash('error', "❌ Your offer (EGP {$offer}) is too low! Minimum accepted: EGP {$minAcceptable} ({$negotiationRange} negotiation allowed).");
                 header('Location: /marketplace/show/' . $itemId);
                 exit;
             }
@@ -173,14 +184,34 @@ class OrderController {
         $price = $offer > 0 ? $offer : $item['item_price'];
         $fee = round($price * 0.05, 2);
 
-        $orderId = $this->orderModel->create(
-            Session::userId(), $item['owner_id'],
-            [['item_id' => $itemId, 'price' => $price]], $fee
-        );
+        try {
+            $orderId = $this->orderModel->create(
+                Session::userId(), $item['owner_id'],
+                [['item_id' => $itemId, 'price' => $price]], $fee
+            );
+            
+            if (!$orderId) {
+                throw new Exception('Failed to create order in database.');
+            }
+        } catch (Exception $e) {
+            Session::flash('error', 'Failed to create order: ' . $e->getMessage());
+            header('Location: /marketplace/show/' . $itemId);
+            exit;
+        }
 
-        $txId = $this->orderModel->createTransaction($orderId, $paymentMethod);
-        $this->orderModel->createEscrow($txId, $price + $fee);
-        $this->orderModel->updateTransactionStatus($txId, 'completed');
+        try {
+            $txId = $this->orderModel->createTransaction($orderId, $paymentMethod);
+            if (!$txId) {
+                throw new Exception('Failed to create transaction.');
+            }
+            
+            $this->orderModel->createEscrow($txId, $price + $fee);
+            $this->orderModel->updateTransactionStatus($txId, 'completed');
+        } catch (Exception $e) {
+            Session::flash('error', 'Payment processing failed: ' . $e->getMessage());
+            header('Location: /marketplace/show/' . $itemId);
+            exit;
+        }
 
         $itemModel->lockItem($itemId);
 
@@ -192,30 +223,67 @@ class OrderController {
         $userModel->updateEcoPoints(Session::userId(), 10);
         $userModel->updateEcoPoints($item['owner_id'], 15);
 
-        $chatModel = new ChatModel();
-        $chatModel->createNotification($item['owner_id'], 'Your item "' . $item['title'] . '" has been purchased!', 'order');
-        $chatModel->createNotification(Session::userId(), 'Order #' . $orderId . ' confirmed.', 'order');
+        try {
+            $chatModel = new ChatModel();
+            $chatModel->createNotification($item['owner_id'], 'Your item "' . $item['title'] . '" has been purchased!', 'order');
+            $chatModel->createNotification(Session::userId(), 'Order #' . $orderId . ' confirmed.', 'order');
+        } catch (Exception $e) {
+            // Notifications failed but order was created, continue
+        }
 
+        Session::flash('success', '✅ Order #' . $orderId . ' placed successfully! Proceed to payment.');
         header('Location: /order/show/' . $orderId);
         exit;
     }
 
     public function confirmDelivery() {
-        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        if (!Session::isLoggedIn()) { 
+            Session::flash('error', 'You must be logged in to confirm delivery.');
+            header('Location: /auth/login'); 
+            exit; 
+        }
+        
         $orderId = $_POST['order_id'] ?? 0;
+        if (!$orderId) {
+            Session::flash('error', 'Invalid order ID.');
+            header('Location: /order');
+            exit;
+        }
+        
         $order = $this->orderModel->findById($orderId);
-        if (!$order || $order['buyer_id'] != Session::userId()) { header('Location: /order'); exit; }
-
-        $this->orderModel->updateStatus($orderId, 'delivered');
-        $tx = $this->orderModel->getTransaction($orderId);
-        if ($tx) {
-            $escrow = $this->orderModel->getEscrow($tx['transaction_id']);
-            if ($escrow) $this->orderModel->releaseEscrow($escrow['escrow_id']);
+        if (!$order) {
+            Session::flash('error', 'Order not found.');
+            header('Location: /order');
+            exit;
+        }
+        
+        if ($order['buyer_id'] != Session::userId()) {
+            Session::flash('error', 'You can only confirm delivery for your own orders.');
+            header('Location: /order');
+            exit;
         }
 
-        $shippingModel = new ShippingModel();
-        $ship = $shippingModel->findByOrder($orderId);
-        if ($ship) $shippingModel->updateStatus($ship['shipping_id'], 'delivered');
+        try {
+            $this->orderModel->updateStatus($orderId, 'delivered');
+            
+            $tx = $this->orderModel->getTransaction($orderId);
+            if ($tx) {
+                $escrow = $this->orderModel->getEscrow($tx['transaction_id']);
+                if ($escrow) {
+                    $this->orderModel->releaseEscrow($escrow['escrow_id']);
+                }
+            }
+
+            $shippingModel = new ShippingModel();
+            $ship = $shippingModel->findByOrder($orderId);
+            if ($ship) {
+                $shippingModel->updateStatus($ship['shipping_id'], 'delivered');
+            }
+            
+            Session::flash('success', 'Order #' . $orderId . ' confirmed as delivered! Payment released to seller.');
+        } catch (Exception $e) {
+            Session::flash('error', 'Failed to confirm delivery: ' . $e->getMessage());
+        }
 
         header('Location: /order/show/' . $orderId);
         exit;

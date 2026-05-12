@@ -81,6 +81,26 @@ $chats = $data['chat_users'] ?? [];
   </div>
 </nav>
 
+<?php
+$error = Session::flash('error');
+$success = Session::flash('success');
+if ($error || $success): ?>
+<div class="container mt-3">
+  <?php if ($error): ?>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>⚠️ Error:</strong> <?= htmlspecialchars($error) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <?php endif; ?>
+  <?php if ($success): ?>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>✅ Success:</strong> <?= htmlspecialchars($success) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <?php endif; ?>
+</div>
+<?php endif; ?>
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" style="width: 500px; max-width: 100vw;">
   <div class="offcanvas-header border-bottom">
     <h5 class="mb-0">Chat</h5>

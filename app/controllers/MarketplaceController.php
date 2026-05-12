@@ -77,15 +77,30 @@ class MarketplaceController {
 
     public function show($id) {
         $item = $this->itemModel->findById($id);
-        if (!$item) { header('Location: /marketplace'); exit; }
+        if (!$item) { 
+            Session::flash('error', 'Item not found.');
+            header('Location: /marketplace'); 
+            exit; 
+        }
+
+        // Check if item is still available
+        if (strtolower(trim($item['item_status'])) !== 'available') {
+            Session::flash('error', 'This item is no longer available for purchase.');
+            header('Location: /marketplace'); 
+            exit; 
+        }
 
         $userModel = new UserModel();
         $seller = $userModel->findById($item['owner_id']);
         $condition = $this->itemModel->getCondition($id);
 
+        $negotiationPercent = $item['negotiation_percent'] ?? 0;
+        $minPrice = $item['item_price'] * (1 - ($negotiationPercent / 100));
+
         $data = [
             'page_title' => $item['title'],
             'is_logged_in' => Session::isLoggedIn(),
+            'item_id' => $item['item_id'],
             'item_image' => $item['item_photo'] ?: 'https://placehold.co/700x900',
             'item_title' => $item['title'],
             'seller_id' => $item['owner_id'],
@@ -93,7 +108,12 @@ class MarketplaceController {
             'trust_score' => ($seller['trust_score'] ?? 0) . '/5',
             'description' => $item['item_description'],
             'price' => $item['item_price'],
-            'negotiation' => $item['negotiation_percent'] . '%',
+            'negotiation' => $negotiationPercent . '%',
+            'negotiation_percent' => $negotiationPercent,
+            'min_price' => $minPrice,
+            'material_type' => $item['material_type'] ?? '',
+            'size' => $item['size'] ?? '',
+            'is_upcycled' => $item['is_upcycled'] ?? 0,
             'notifications' => [],
             'chat_users' => [],
         ];
