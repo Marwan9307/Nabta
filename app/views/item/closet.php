@@ -82,9 +82,7 @@
       <input name="negotiation" type="number" min="0" max="100" class="form-control" placeholder="Negotiation percentage (e.g., 10)">
       <span class="input-group-text">%</span>
     </div>
-    <input type="file" name="item_photo" class="form-control mb-2">
-    <label class="form-check-label mb-2"><input type="checkbox" name="is_upcycled" class="form-check-input"> Upcycled item</label>
-    
+    <input type="file" name="item_photo" class="form-control mb-2">    
     <hr class="my-3">
     <h6>Condition Assessment</h6>
     <div class="mb-2">
@@ -109,7 +107,6 @@
         <option value="Too Much Usage">Too Much Usage</option>
       </select>
     </div>
->>>>>>> c21e12aacdfccabc531976c43a456a9c7c59d52d
 
             <div class="col-12">
               <label class="form-label">Is this item upcycled?</label>
@@ -141,36 +138,6 @@
                   <div class="col-md-4"><input class="form-control" value="Water saved auto-calculated" disabled></div>
                 </div>
               </div>
-            </div>
-
-            <div class="col-12">
-              <hr>
-              <h6>Condition Assessment</h6>
-            </div>
-            <div class="col-md-4">
-              <select name="tear_check" class="form-select" required>
-                <option value="">Tear Check</option>
-                <option value="No">No (Passed)</option>
-                <option value="Yes">Yes (Failed)</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <select name="cleanliness_check" class="form-select" required>
-                <option value="">Cleanliness Check</option>
-                <option value="Yes">Yes (Passed)</option>
-                <option value="No">No (Failed)</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <select name="usage_frequency" class="form-select" required>
-                <option value="">Usage Frequency</option>
-                <option value="Little Usage">Little Usage</option>
-                <option value="Medium Usage">Medium Usage</option>
-                <option value="Too Much Usage">Too Much Usage</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <button class="btn btn-clay w-100" type="submit">Add to Closet & Assess</button>
             </div>
           </div>
         </form>
