@@ -50,6 +50,7 @@ $router->get('/order/show/{id}', 'OrderController@show');
 $router->post('/order/buy', 'OrderController@buy');
 $router->post('/order/confirm', 'OrderController@confirmDelivery');
 
+
 $router->get('/swap', 'SwapController@index');
 $router->get('/swap/show/{id}', 'SwapController@show');
 $router->post('/swap/request', 'SwapController@request');
@@ -71,6 +72,7 @@ $router->get('/admin', 'AdminController@index');
 $router->post('/admin/approve-upcycler', 'AdminController@approveUpcycler');
 $router->post('/admin/reject-upcycler', 'AdminController@rejectUpcycler');
 $router->post('/admin/make-admin', 'AdminController@makeAdmin');
+$router->post('/admin/make-moderator', 'AdminController@makeModerator');
 $router->post('/admin/revoke-admin', 'AdminController@revokeAdmin');
 $router->get('/admin/reports', 'AdminController@reports');
 

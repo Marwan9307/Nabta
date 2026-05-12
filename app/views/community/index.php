@@ -30,14 +30,14 @@ if ($userRole === 'admin') {
           <img src="<?= htmlspecialchars($post['media_url']) ?>" alt="Post media" class="img-fluid rounded mb-2" style="max-height: 400px; object-fit: cover;">
         <?php endif; ?>
 
-        <small class="text-muted">By <?= $post['author_name'] ?? 'Unknown' ?> · <?= $post['created_at'] ?? '' ?></small>
+        <small class="text-muted">By <a href="/profile/<?= htmlspecialchars($post['author_id'] ?? 0) ?>" class="text-decoration-none fw-bold"><?= htmlspecialchars($post['author_name'] ?? 'Unknown') ?></a> · <?= $post['created_at'] ?? '' ?></small>
         
         <?php if (!empty($post['comments'])): ?>
           <div class="mt-2 bg-light p-2 rounded small">
             <strong>Comments:</strong>
             <?php foreach ($post['comments'] as $c): ?>
               <div class="border-bottom border-light pb-1 mb-1 mt-1">
-                <strong><?= htmlspecialchars($c['author_name'] ?? 'Unknown') ?>:</strong> <?= htmlspecialchars($c['content'] ?? '') ?>
+                <strong><a href="/profile/<?= htmlspecialchars($c['author_id'] ?? 0) ?>" class="text-decoration-none text-dark"><?= htmlspecialchars($c['author_name'] ?? 'Unknown') ?></a>:</strong> <?= htmlspecialchars($c['content'] ?? '') ?>
               </div>
             <?php endforeach; ?>
           </div>

@@ -28,6 +28,7 @@ class ProfileController {
         $data = [
             'page_title' => 'Profile',
             'is_logged_in' => Session::isLoggedIn(),
+            'user_id' => $userId,
             'avatar' => $user['profile_picture'] ?: 'https://placehold.co/100x100',
             'name' => $user['username'],
             'email' => $user['email'] ?? 'Not set',
@@ -45,6 +46,7 @@ class ProfileController {
             'street_name' => $user['street_name'] ?? '',
             'trust_score' => $stars,
             'eco_points' => $user['eco_points'] ?? 0,
+            'role' => $user['role'] ?? 'registered',
             'notifications' => [],
             'chat_users' => [],
         ];

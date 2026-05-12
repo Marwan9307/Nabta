@@ -1,6 +1,34 @@
 <?php $data['page_title'] = $data['page_title'] ?? 'Admin'; require_once __DIR__ . '/header.php'; ?>
 <div class="card-eco p-4 mb-3">
   <h2>Admin Dashboard</h2>
+  
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0" style="background-color: #fdfdfc; border-radius: 12px;">
+            <h6 class="text-muted mb-1 text-start" style="font-size: 0.85rem; font-weight: normal;">Total Users</h6>
+            <h4 class="mb-0 text-start" style="color: #4a6b4a; font-weight: bold;"><?= number_format($data['total_users'] ?? 0) ?></h4>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0" style="background-color: #fdfdfc; border-radius: 12px;">
+            <h6 class="text-muted mb-1 text-start" style="font-size: 0.85rem; font-weight: normal;">Total Orders</h6>
+            <h4 class="mb-0 text-start" style="color: #4a6b4a; font-weight: bold;"><?= number_format($data['total_orders'] ?? 0) ?></h4>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0" style="background-color: #fdfdfc; border-radius: 12px;">
+            <h6 class="text-muted mb-1 text-start" style="font-size: 0.85rem; font-weight: normal;">Open Reports</h6>
+            <h4 class="mb-0 text-start" style="color: #4a6b4a; font-weight: bold;"><?= number_format($data['open_reports'] ?? 0) ?></h4>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm border-0" style="background-color: #fdfdfc; border-radius: 12px;">
+            <h6 class="text-muted mb-1 text-start" style="font-size: 0.85rem; font-weight: normal;">Pending Applications</h6>
+            <h4 class="mb-0 text-start" style="color: #4a6b4a; font-weight: bold;"><?= number_format($data['pending_apps'] ?? 0) ?></h4>
+        </div>
+    </div>
+  </div>
+
   <div class="row g-3">
     <div class="col-lg-6"><canvas id="styleTrends"></canvas></div>
     <div class="col-lg-6"><canvas id="sustainabilityAudit"></canvas></div>
@@ -52,14 +80,27 @@
           <td><?= htmlspecialchars($user['email']) ?></td>
           <td><span class="badge bg-secondary"><?= htmlspecialchars($user['role']) ?></span></td>
           <td>
-            <?php if ($user['role'] !== 'admin'): ?>
-            <form method="post" action="/admin/make-admin" onsubmit="return confirm('Are you sure you want to promote <?= htmlspecialchars($user['username']) ?> to Admin?');">
-              <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
-              <button type="submit" class="btn btn-sm btn-primary">Make Admin</button>
-            </form>
-            <?php else: ?>
-              <span class="text-muted small">Admin</span>
-            <?php endif; ?>
+            <div class="d-flex gap-2 align-items-center">
+              <?php if ($user['role'] !== 'admin'): ?>
+              <form method="post" action="/admin/make-admin" class="mb-0" onsubmit="return confirm('Are you sure you want to promote <?= htmlspecialchars($user['username']) ?> to Admin?');">
+                <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                <button type="submit" class="btn btn-sm btn-primary">Make Admin</button>
+              </form>
+              <?php endif; ?>
+              
+              <?php if ($user['role'] !== 'moderator' && $user['role'] !== 'admin'): ?>
+              <form method="post" action="/admin/make-moderator" class="mb-0" onsubmit="return confirm('Are you sure you want to promote <?= htmlspecialchars($user['username']) ?> to Moderator?');">
+                <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
+                <button type="submit" class="btn btn-sm btn-info text-white">Make Moderator</button>
+              </form>
+              <?php endif; ?>
+
+              <?php if ($user['role'] === 'admin'): ?>
+                <span class="text-muted small">System Admin</span>
+              <?php elseif ($user['role'] === 'moderator'): ?>
+                <span class="text-muted small">Community Moderator</span>
+              <?php endif; ?>
+            </div>
           </td>
         </tr>
         <?php endforeach; ?>

@@ -19,12 +19,22 @@ class AdminController {
         $pending = $userModel->getPendingUpcyclers();
         $all_users = $userModel->getAllUsers();
 
+        $dbEcommerce = Database::get('orders');
+        $totalOrders = (int) $dbEcommerce->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+
+        $dbSocial = Database::get('reports');
+        $openReports = (int) $dbSocial->query("SELECT COUNT(*) FROM reports WHERE report_status = 'pending'")->fetchColumn();
+
         $data = [
             'page_title' => 'Admin',
             'is_logged_in' => true,
             'avatar' => $user['profile_picture'] ?: 'https://placehold.co/40x40',
             'pending_upcyclers' => $pending,
             'all_users' => $all_users,
+            'total_users' => count($all_users),
+            'total_orders' => $totalOrders,
+            'open_reports' => $openReports,
+            'pending_apps' => count($pending),
             'notifications' => [],
             'chat_users' => [],
         ];
@@ -79,6 +89,21 @@ class AdminController {
         
         $chatModel = new ChatModel();
         $chatModel->createNotification($userId, 'You have been promoted to Admin!', 'system');
+
+        header('Location: /admin');
+        exit;
+    }
+
+    public function makeModerator() {
+        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
+        $userId = $_POST['user_id'] ?? 0;
+        
+        $db = Database::get('users');
+        $stmt = $db->prepare("UPDATE users SET role = 'moderator' WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        $chatModel = new ChatModel();
+        $chatModel->createNotification($userId, 'You have been promoted to Moderator!', 'system');
 
         header('Location: /admin');
         exit;
