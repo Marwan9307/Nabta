@@ -34,6 +34,9 @@ class AuthController {
         if (session::get('user_role') === 'admin') {
             header('Location: /admin'); 
         }
+        if (session::get('user_role') === 'moderator') {
+            header('Location: /moderator'); 
+        }
         else {header('Location: /home'); } 
         // header('Location: /home'); 
         exit;

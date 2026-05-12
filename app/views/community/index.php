@@ -8,7 +8,12 @@
     </div>
     <?php foreach (($data['posts'] ?? []) as $post): ?>
       <div class="card-eco p-3 mb-2 spring">
-        <h6><?= htmlspecialchars($post['title'] ?? '') ?></h6>
+        <div class="d-flex justify-content-between align-items-start">
+          <h6><?= htmlspecialchars($post['title'] ?? '') ?></h6>
+          <button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none" data-bs-toggle="modal" data-bs-target="#reportModal<?= $post['post_id'] ?>" title="Report Post">
+            <small>⚠️ Report</small>
+          </button>
+        </div>
         <p class="small mb-1"><?= htmlspecialchars($post['content'] ?? '') ?></p>
         
         <?php if (!empty($post['media_url'])): ?>
@@ -34,6 +39,33 @@
             <input type="text" name="content" class="form-control form-control-sm me-2" placeholder="Add a comment..." required>
             <button type="submit" class="btn btn-sm btn-clay">Comment</button>
         </form>
+      </div>
+
+      <!-- Report Modal for each post -->
+      <div class="modal fade" id="reportModal<?= $post['post_id'] ?>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-danger">Report Post</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/report/create" method="POST">
+              <div class="modal-body">
+                <input type="hidden" name="target_id" value="<?= $post['post_id'] ?>">
+                <input type="hidden" name="report_type" value="communication">
+                <p>Are you sure you want to report this post by <strong><?= htmlspecialchars($post['author_name'] ?? 'Unknown') ?></strong>?</p>
+                <div class="mb-3">
+                  <label for="reason<?= $post['post_id'] ?>" class="form-label">Reason for reporting</label>
+                  <textarea name="reason" id="reason<?= $post['post_id'] ?>" class="form-control" rows="3" required placeholder="Please provide specific details about why this post violates community guidelines..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Submit Report</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     <?php endforeach; ?>
   </div>
