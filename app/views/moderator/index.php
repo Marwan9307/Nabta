@@ -1,4 +1,4 @@
-<?php $data['page_title'] = $data['page_title'] ?? 'Moderator'; require_once __DIR__ . '/../layout/header.php'; ?>
+<?php $data['page_title'] = $data['page_title'] ?? 'Moderator'; require_once __DIR__ . '/header.php'; ?>
 <div class="card-eco p-4">
   <h2>Community Reports (Behavioral)</h2>
   <div class="table-responsive">

@@ -1,4 +1,14 @@
-<?php $data['page_title'] = $data['page_title'] ?? 'Community'; require_once __DIR__ . '/../layout/header.php'; ?>
+<?php 
+$data['page_title'] = $data['page_title'] ?? 'Community'; 
+$userRole = Session::userRole() ?? '';
+if ($userRole === 'admin') {
+    require_once __DIR__ . '/../admin/header.php';
+} elseif ($userRole === 'moderator') {
+    require_once __DIR__ . '/../moderator/header.php';
+} else {
+    require_once __DIR__ . '/../layout/header.php';
+}
+?>
 <div class="row g-3">
   <div class="col-lg-8">
     <div class="card-eco p-4 mb-3">
