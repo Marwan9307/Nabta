@@ -106,6 +106,7 @@
         <option value="Medium Usage">Medium Usage</option>
         <option value="Too Much Usage">Too Much Usage</option>
       </select>
+      <button class="btn btn-clay w-100" type="submit">Add to Closet & Assess</button>
     </div>
 
             <div class="col-12">
@@ -136,6 +137,7 @@
                   <div class="col-md-4"><input class="form-control" value="Item ID auto-generated" disabled></div>
                   <div class="col-md-4"><input class="form-control" value="CO2 saved auto-calculated" disabled></div>
                   <div class="col-md-4"><input class="form-control" value="Water saved auto-calculated" disabled></div>
+                  <button class="btn btn-clay w-100" type="submit">Add to Closet & Assess</button>
                 </div>
               </div>
             </div>
