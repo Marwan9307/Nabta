@@ -59,46 +59,61 @@ class ItemModel {
         return $stmt->fetchAll();
     }
 
-    public function getMarketplaceItems($filters = []) {
-        $sql = "SELECT * FROM item WHERE item_status = 'available'";
-        $params = [];
+public function getMarketplaceItems($filters = []) {
+    // عملنا JOIN هنا عشان نجيب الـ final_grade من جدول التقييم
+    $sql = "SELECT i.*, ca.final_grade 
+            FROM item i 
+            LEFT JOIN condition_assessment ca ON i.item_id = ca.item_id 
+            WHERE i.item_status = 'available'";
+    
+    $params = [];
 
-        if (!empty($filters['category'])) {
-            $sql .= " AND category = ?";
-            $params[] = $filters['category'];
-        }
-        if (!empty($filters['listing_type'])) {
-            $sql .= " AND listing_type = ?";
-            $params[] = $filters['listing_type'];
-        }
-        if (!empty($filters['is_upcycled'])) {
-            $sql .= " AND is_upcycled = 1";
-        }
-        if (!empty($filters['min_price'])) {
-            $sql .= " AND item_price >= ?";
-            $params[] = $filters['min_price'];
-        }
-        if (!empty($filters['max_price'])) {
-            $sql .= " AND item_price <= ?";
-            $params[] = $filters['max_price'];
-        }
-        if (!empty($filters['search'])) {
-            $sql .= " AND (title LIKE ? OR item_description LIKE ?)";
-            $params[] = '%' . $filters['search'] . '%';
-            $params[] = '%' . $filters['search'] . '%';
-        }
-
-        $sort = $filters['sort'] ?? 'newest';
-        switch ($sort) {
-            case 'price_asc': $sql .= " ORDER BY item_price ASC"; break;
-            case 'price_desc': $sql .= " ORDER BY item_price DESC"; break;
-            default: $sql .= " ORDER BY created_at DESC";
-        }
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
+    // فلتر النوع (Category) - زودنا Shoes و Jackets
+    if (!empty($filters['category'])) {
+        $sql .= " AND i.category = ?";
+        $params[] = $filters['category'];
     }
+
+    // فلتر الخامة (Material) - جديد
+    if (!empty($filters['material'])) {
+        $sql .= " AND i.material_type = ?";
+        $params[] = $filters['material'];
+    }
+
+    // فلتر الحالة (Condition) - بيقرأ من الجدول المربوط
+    if (!empty($filters['condition'])) {
+        $sql .= " AND ca.final_grade = ?";
+        $params[] = $filters['condition'];
+    }
+
+    // داخل دالة getMarketplaceItems
+    if (!empty($filters['gender'])) {
+        $sql .= " AND i.gender = ?"; // أو اسم العمود عندك في الداتابيز
+        $params[] = $filters['gender'];
+   }
+
+    // بقية الفلاتر (Upcycled / Price / Search)
+    if (!empty($filters['is_upcycled'])) {
+        $sql .= " AND i.is_upcycled = 1";
+    }
+    if (!empty($filters['search'])) {
+        $sql .= " AND (i.title LIKE ? OR i.item_description LIKE ?)";
+        $params[] = '%' . $filters['search'] . '%';
+        $params[] = '%' . $filters['search'] . '%';
+    }
+
+    // الترتيب
+    $sort = $filters['sort'] ?? 'newest';
+    switch ($sort) {
+        case 'price_asc': $sql .= " ORDER BY i.item_price ASC"; break;
+        case 'price_desc': $sql .= " ORDER BY i.item_price DESC"; break;
+        default: $sql .= " ORDER BY i.item_id DESC";
+    }
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
 
     public function lockItem($id) {
         return $this->update($id, ['item_status' => 'locked']);

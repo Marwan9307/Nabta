@@ -15,8 +15,12 @@ class MarketplaceController {
     public function index() {
         $filters = [
             'category' => $_GET['category'] ?? '',
+            'material' => $_GET['material'] ?? '', 
+            'condition' => $_GET['condition'] ?? '', 
+            'gender' => $_GET['gender'] ?? '',
             'listing_type' => $_GET['listing_type'] ?? '',
             'is_upcycled' => $_GET['upcycled'] ?? '',
+            'swap_available' => $_GET['swap_available'] ?? '',
             'min_price' => $_GET['min_price'] ?? '',
             'max_price' => $_GET['max_price'] ?? '',
             'search' => $_GET['q'] ?? '',
