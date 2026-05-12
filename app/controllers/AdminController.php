@@ -68,39 +68,35 @@ class AdminController {
         exit;
     }
 
-    public function makeAdmin() {
+    public function setRole() {
         if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
         $userId = $_POST['user_id'] ?? 0;
-        $userModel = new UserModel();
+        $role = $_POST['role'] ?? 'registered';
         
-        $db = Database::get('users');
-        $stmt = $db->prepare("UPDATE users SET role = 'admin' WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        
-        $chatModel = new ChatModel();
-        $chatModel->createNotification($userId, 'You have been promoted to Admin!', 'system');
+        $validRoles = ['admin', 'moderator', 'analyst', 'registered', 'upcycler'];
+        if (!in_array($role, $validRoles)) {
+            header('Location: /admin');
+            exit;
+        }
 
-        header('Location: /admin');
-        exit;
-    }
-
-    public function revokeAdmin() {
-        if (!Session::isLoggedIn() || Session::userRole() !== 'admin') { header('Location: /home'); exit; }
-        $userId = $_POST['user_id'] ?? 0;
-        
-        // Prevent revoking own admin access
-        if ($userId == Session::userId()) {
-            Session::flash('error', 'You cannot revoke your own admin rights.');
+        if ($userId == Session::userId() && $role !== 'admin') {
+            Session::flash('error', 'You cannot downgrade your own admin account.');
             header('Location: /admin');
             exit;
         }
 
         $db = Database::get('users');
-        $stmt = $db->prepare("UPDATE users SET role = 'registered' WHERE user_id = ?");
-        $stmt->execute([$userId]);
+        $stmt = $db->prepare("UPDATE users SET role = ? WHERE user_id = ?");
+        $stmt->execute([$role, $userId]);
         
+        // Also insert/update staff table if making them staff
+        if (in_array($role, ['admin', 'moderator', 'analyst'])) {
+            $staffStmt = $db->prepare("INSERT OR IGNORE INTO staff (user_id, salary, specialization) VALUES (?, 0, ?)");
+            $staffStmt->execute([$userId, ucfirst($role)]);
+        }
+
         $chatModel = new ChatModel();
-        $chatModel->createNotification($userId, 'Your Admin privileges have been revoked.', 'system');
+        $chatModel->createNotification($userId, 'Your account role has been updated to: ' . ucfirst($role), 'system');
 
         header('Location: /admin');
         exit;

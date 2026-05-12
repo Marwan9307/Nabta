@@ -9,12 +9,18 @@
 <div class="card-eco p-4 mb-4">
   <h4>Upcycler Applications</h4>
   <table class="table">
-    <thead><tr><th>User</th><th>Status</th><th>Actions</th><th>Reason for rejection</th></tr></thead>
+    <thead><tr><th>User</th><th>Motivation / Portfolio</th><th>Status</th><th>Actions</th><th>Reason for rejection</th></tr></thead>
     <tbody>
       <?php if (!empty($data['pending_upcyclers'])): ?>
         <?php foreach ($data['pending_upcyclers'] as $upcycler): ?>
         <tr>
           <td><?= htmlspecialchars($upcycler['username']) ?></td>
+          <td>
+            <small class="d-block text-muted"><?= htmlspecialchars($upcycler['motivation'] ?? 'No motivation provided.') ?></small>
+            <?php if (!empty($upcycler['portfolio'])): ?>
+              <a href="<?= htmlspecialchars($upcycler['portfolio']) ?>" target="_blank" class="small">View Portfolio</a>
+            <?php endif; ?>
+          </td>
           <td><span class="badge bg-warning text-dark"><?= htmlspecialchars($upcycler['status']) ?></span></td>
           <td>
             <div class="d-flex gap-2">
@@ -22,7 +28,7 @@
                 <input type="hidden" name="user_id" value="<?= $upcycler['user_id'] ?>">
                 <button class="btn btn-sm btn-success">Approve</button>
               </form>
-              <form method="post" action="/admin/reject-upcycler" class="d-flex gap-2">
+              <form method="post" id="rejectForm_<?= $upcycler['user_id'] ?>" action="/admin/reject-upcycler" class="d-flex gap-2">
                 <input type="hidden" name="user_id" value="<?= $upcycler['user_id'] ?>">
                 <button class="btn btn-sm btn-outline-danger">Reject</button>
               </form>
@@ -34,7 +40,7 @@
         </tr>
         <?php endforeach; ?>
       <?php else: ?>
-        <tr><td colspan="4" class="text-center text-muted">No pending upcycler applications at this time.</td></tr>
+        <tr><td colspan="5" class="text-center text-muted">No pending upcycler applications at this time.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>
