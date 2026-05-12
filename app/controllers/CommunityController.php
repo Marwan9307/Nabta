@@ -18,6 +18,13 @@ class CommunityController {
         foreach ($posts as &$post) {
             $author = $userModel->findById($post['author_id']);
             $post['author_name'] = $author['username'] ?? 'Unknown';
+            
+            $comments = $this->communityModel->getComments($post['post_id']);
+            foreach ($comments as &$comment) {
+                $commentAuthor = $userModel->findById($comment['author_id']);
+                $comment['author_name'] = $commentAuthor['username'] ?? 'Unknown';
+            }
+            $post['comments'] = $comments;
         }
 
         $mentors = [];
@@ -107,10 +114,18 @@ class CommunityController {
             header('Location: /community/create');
             exit;
         }
-        $content = $_POST['content'] ?? '';
         $postType = $_POST['post_type'] ?? 'general';
 
-        $this->communityModel->createPost(Session::userId(), $title, $content, '', $postType);
+        $mediaUrl = '';
+        if (isset($_FILES['media']) && $_FILES['media']['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['media']['name'], PATHINFO_EXTENSION);
+            $mediaUrl = '/uploads/community/' . uniqid() . '.' . $ext;
+            $dir = __DIR__ . '/../../public/uploads/community';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+            move_uploaded_file($_FILES['media']['tmp_name'], __DIR__ . '/../../public' . $mediaUrl);
+        }
+
+        $this->communityModel->createPost(Session::userId(), $title, $content, $mediaUrl, $postType);
 
         $userModel = new UserModel();
         $userModel->updateEcoPoints(Session::userId(), 5);
@@ -125,6 +140,21 @@ class CommunityController {
         if ($mentorId) {
             $this->communityModel->createMentorship($mentorId, Session::userId());
         }
+        header('Location: /community');
+        exit;
+    }
+
+    public function addComment() {
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        
+        $postId = $_POST['post_id'] ?? null;
+        $content = trim($_POST['content'] ?? '');
+        $userId = Session::userId();
+
+        if ($postId && $content !== '') {
+            $this->communityModel->addComment($postId, $userId, $content);
+        }
+        
         header('Location: /community');
         exit;
     }

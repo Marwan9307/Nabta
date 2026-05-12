@@ -103,6 +103,47 @@ class ItemModel {
         return $this->update($id, ['item_status' => 'available']);
     }
 
+    public function assessItem($itemId, $tearCheck, $cleanlinessCheck, $usageFrequency) {
+        $score = 0;
+        
+        if (strtolower($tearCheck) === 'yes') {
+            $score += 33.33;
+        }
+        
+        if (strtolower($cleanlinessCheck) === 'yes') {
+            $score += 33.33;
+        }
+        
+        $usage = strtolower($usageFrequency);
+        if ($usage === 'little usage') {
+            $score += 33.33;
+        } elseif ($usage === 'medium usage') {
+            $score += 22.22;
+        } elseif ($usage === 'too much usage') {
+            $score += 11.11;
+        }
+        
+        $finalGrade = '';
+        if ($score >= 99) {
+            $finalGrade = 'Like New';
+        } elseif ($score >= 66) {
+            $finalGrade = 'Good';
+        } else {
+            $finalGrade = 'Fair';
+        }
+        
+        $stmt = $this->db->prepare("INSERT OR REPLACE INTO condition_assessment (item_id, stain_check, tear_check, fading_check, missing_button, usage_frequency, final_grade) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([
+            $itemId, 
+            strtolower($cleanlinessCheck) === 'no' ? 1 : 0, // Assuming cleanliness maps to stain/fading vaguely
+            strtolower($tearCheck) === 'yes' ? 0 : 1, // Assuming "Yes" meant passing the check (not torn)
+            0, 
+            0, 
+            $usageFrequency, 
+            $finalGrade
+        ]);
+    }
+
     public function saveCondition($itemId, $data) {
         $stmt = $this->db->prepare("INSERT OR REPLACE INTO condition_assessment (item_id, stain_check, tear_check, fading_check, missing_button, usage_frequency, final_grade) VALUES (?, ?, ?, ?, ?, ?, ?)");
         return $stmt->execute([

@@ -121,17 +121,41 @@ class OrderController {
 
     public function buy() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
-        $itemId = $_POST['item_id'] ?? 0;
-        $offer = $_POST['offer_price'] ?? 0;
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Session::flash('error', 'Invalid request method.');
+            header('Location: /marketplace');
+            exit;
+        }
+
+        $itemId = (int)($_POST['item_id'] ?? 0);
+        $offer = !empty($_POST['offer_price']) ? (float)$_POST['offer_price'] : 0;
         $paymentMethod = $_POST['payment_method'] ?? 'card';
 
         $itemModel = new ItemModel();
         $item = $itemModel->findById($itemId);
-        if (!$item || $item['item_status'] !== 'available') { header('Location: /marketplace'); exit; }
         
-        // Ensure offer is not unreasonably lower than negotiated threshold or at least strictly not lower than buyer's base price constraint
+        if (!$item) {
+            Session::flash('error', 'Item not found.');
+            header('Location: /marketplace');
+            exit;
+        }
+
+        if (strtolower(trim($item['item_status'])) !== 'available') {
+            Session::flash('error', 'This item is no longer available.');
+            header('Location: /marketplace');
+            exit;
+        }
+
+        if ($item['owner_id'] == Session::userId()) {
+            Session::flash('error', 'You cannot buy your own item.');
+            header('Location: /marketplace/show/' . $itemId);
+            exit;
+        }
+
+        $offer = min($offer, $item['item_price']);
+
         if ($offer > 0 && $offer < $item['item_price'] && $item['negotiation_percent'] == 0) {
-            // If they can't negotiate, it's strictly rejected
             Session::flash('error', 'Offer price cannot be lower than the asking price.');
             header('Location: /marketplace/show/' . $itemId);
             exit;

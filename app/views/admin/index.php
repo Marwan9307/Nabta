@@ -1,11 +1,4 @@
-<?php $data['page_title'] = $data['page_title'] ?? 'Admin'; require_once __DIR__ . '/../layout/header.php'; ?>
-<div class="card-eco p-4 mb-3">
-  <h5 class="mb-3">Biometric Retina Scan Simulation</h5>
-  <div id="retinaSim" class="biometric-screen mb-2">
-    <div class="scan-line"></div>
-  </div>
-  <small class="text-muted">Security check runs for 2 seconds before entry.</small>
-</div>
+<?php $data['page_title'] = $data['page_title'] ?? 'Admin'; require_once __DIR__ . '/header.php'; ?>
 <div class="card-eco p-4 mb-3">
   <h2>Admin Dashboard</h2>
   <div class="row g-3">

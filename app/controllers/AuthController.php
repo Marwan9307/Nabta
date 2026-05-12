@@ -31,7 +31,11 @@ class AuthController {
         Session::set('user_id', $user['user_id']);
         Session::set('user_role', $user['role']);
         Session::set('username', $user['username']);
-        header('Location: /home'); // Maps to WelcomePage in SSD
+        if (session::get('user_role') === 'admin') {
+            header('Location: /admin'); 
+        }
+        else {header('Location: /home'); } 
+        // header('Location: /home'); 
         exit;
     }
 

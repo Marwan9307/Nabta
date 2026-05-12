@@ -10,7 +10,30 @@
       <div class="card-eco p-3 mb-2 spring">
         <h6><?= htmlspecialchars($post['title'] ?? '') ?></h6>
         <p class="small mb-1"><?= htmlspecialchars($post['content'] ?? '') ?></p>
+        
+        <?php if (!empty($post['media_url'])): ?>
+          <img src="<?= htmlspecialchars($post['media_url']) ?>" alt="Post media" class="img-fluid rounded mb-2" style="max-height: 400px; object-fit: cover;">
+        <?php endif; ?>
+
         <small class="text-muted">By <?= $post['author_name'] ?? 'Unknown' ?> · <?= $post['created_at'] ?? '' ?></small>
+        
+        <?php if (!empty($post['comments'])): ?>
+          <div class="mt-2 bg-light p-2 rounded small">
+            <strong>Comments:</strong>
+            <?php foreach ($post['comments'] as $c): ?>
+              <div class="border-bottom border-light pb-1 mb-1 mt-1">
+                <strong><?= htmlspecialchars($c['author_name'] ?? 'Unknown') ?>:</strong> <?= htmlspecialchars($c['content'] ?? '') ?>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <hr class="my-2">
+        <form method="post" action="/community/comment" class="d-flex mt-2">
+            <input type="hidden" name="post_id" value="<?= $post['post_id'] ?>">
+            <input type="text" name="content" class="form-control form-control-sm me-2" placeholder="Add a comment..." required>
+            <button type="submit" class="btn btn-sm btn-clay">Comment</button>
+        </form>
       </div>
     <?php endforeach; ?>
   </div>

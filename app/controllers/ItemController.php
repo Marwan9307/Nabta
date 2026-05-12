@@ -68,8 +68,22 @@ class ItemController {
     }
 
     public function assessItem($itemId) {
-        // Use Case: Assess Item (<include> from Do an Operation)
-        echo "Item status and authenticity assessed for ID: " . htmlspecialchars($itemId);
+        if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+        
+        if (empty($_POST['tear_check']) || empty($_POST['cleanliness_check']) || empty($_POST['usage_frequency'])) {
+            Session::flash('error', 'You must complete the full condition assessment (Tear Check, Cleanliness, Usage Frequency) before proceeding.');
+            header("Location: /item/closet");
+            exit;
+        }
+
+        $tearCheck = $_POST['tear_check'];
+        $cleanlinessCheck = $_POST['cleanliness_check'];
+        $usageFrequency = $_POST['usage_frequency'];
+
+        $this->itemModel->assessItem($itemId, $tearCheck, $cleanlinessCheck, $usageFrequency);
+        
+        header('Location: /item/closet');
+        exit;
     }
 
     public function listBulkItems() {
@@ -89,6 +103,16 @@ class ItemController {
 
     public function create() {
         if (!Session::isLoggedIn()) { header('Location: /auth/login'); exit; }
+
+        $tearCheck = $_POST['tear_check'] ?? '';
+        $cleanlinessCheck = $_POST['cleanliness_check'] ?? '';
+        $usageFrequency = $_POST['usage_frequency'] ?? '';
+
+        if (empty($tearCheck) || empty($cleanlinessCheck) || empty($usageFrequency)) {
+            Session::flash('error', 'You must complete the full condition assessment (Tear Check, Cleanliness, Usage Frequency) prior to adding an item.');
+            header("Location: /item/closet");
+            exit;
+        }
 
         $photo = '';
         if (isset($_FILES['item_photo']) && $_FILES['item_photo']['error'] === 0) {
@@ -115,6 +139,9 @@ class ItemController {
         ]);
 
         $this->itemModel->addToCloset(Session::userId(), $itemId);
+        
+        // Link the condition assessment grading!
+        $this->itemModel->assessItem($itemId, $tearCheck, $cleanlinessCheck, $usageFrequency);
 
         if (!empty($_POST['material_type']) && !empty($_POST['weight'])) {
             $analytics = new AnalyticsModel();

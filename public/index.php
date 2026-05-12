@@ -40,6 +40,7 @@ $router->get('/item/create', 'ItemController@createForm');
 $router->post('/item/create', 'ItemController@create');
 $router->get('/item/edit/{id}', 'ItemController@editForm');
 $router->post('/item/edit/{id}', 'ItemController@edit');
+$router->post('/item/assess/{id}', 'ItemController@assessItem');
 $router->post('/item/closet/add', 'ItemController@addToCloset');
 $router->post('/item/closet/remove', 'ItemController@removeFromCloset');
 
@@ -58,6 +59,7 @@ $router->get('/community', 'CommunityController@index');
 $router->get('/community/create', 'CommunityController@createForm');
 $router->post('/community/create', 'CommunityController@create');
 $router->post('/community/mentor', 'CommunityController@requestMentor');
+$router->post('/community/comment', 'CommunityController@addComment');
 
 $router->get('/upcycle', 'UpcycleController@index');
 $router->get('/upcycle/track', 'UpcycleController@track');
