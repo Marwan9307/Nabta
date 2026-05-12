@@ -44,11 +44,6 @@ class ItemModel {
     }
 
     public function delete($id) {
-        $this->db->prepare("DELETE FROM condition_assessment WHERE item_id = ?")->execute([$id]);
-        $this->db->prepare("DELETE FROM style_board_items WHERE item_id = ?")->execute([$id]);
-        $this->db->prepare("DELETE FROM upcycling_log WHERE item_id = ?")->execute([$id]);
-        $this->db->prepare("DELETE FROM virtual_closet WHERE item_id = ?")->execute([$id]);
-        
         $stmt = $this->db->prepare("DELETE FROM item WHERE item_id = ?");
         return $stmt->execute([$id]);
     }
@@ -185,14 +180,8 @@ public function getMarketplaceItems($filters = []) {
     }
 
     public function removeFromCloset($ownerId, $itemId) {
-        $stmt_check = $this->db->prepare("SELECT owner_id FROM item WHERE item_id = ?");
-        $stmt_check->execute([$itemId]);
-        $row = $stmt_check->fetch();
-        
-        if ($row && $row['owner_id'] == $ownerId) {
-            return $this->delete($itemId);
-        }
-        return false;
+        $stmt = $this->db->prepare("DELETE FROM virtual_closet WHERE owner_id = ? AND item_id = ?");
+        return $stmt->execute([$ownerId, $itemId]);
     }
 
     public function getClosetItems($ownerId) {

@@ -18,10 +18,6 @@ class ProfileController {
         $user = $this->userModel->findById($userId);
         if (!$user) { header('Location: /home'); exit; }
 
-        if ($userId === Session::userId() && Session::userRole() !== $user['role']) {
-            Session::set('user_role', $user['role']);
-        }
-
         $analytics = new AnalyticsModel();
         $savings = $analytics->getUserSavings($userId);
 
@@ -49,7 +45,6 @@ class ProfileController {
             'street_name' => $user['street_name'] ?? '',
             'trust_score' => $stars,
             'eco_points' => $user['eco_points'] ?? 0,
-            'upcycler_status' => $this->userModel->getUpcyclerStatus($userId),
             'notifications' => [],
             'chat_users' => [],
         ];
@@ -96,19 +91,10 @@ class ProfileController {
             move_uploaded_file($_FILES['portfolio']['tmp_name'], __DIR__ . '/../../public' . $portfolio);
         }
 
-        $motivation = $_POST['motivation'] ?? '';
-
-        $this->userModel->applyUpcyclerRole(Session::userId(), $portfolio, $motivation);
+        $this->userModel->applyUpcyclerRole(Session::userId(), $portfolio);
 
         $chatModel = new ChatModel();
         $chatModel->createNotification(Session::userId(), 'Your upcycler role application is under review.', 'community');
-        
-        $admins = $this->userModel->getAdmins();
-        foreach ($admins as $admin) {
-            $chatModel->createNotification($admin['user_id'], 'New upcycler application from user #' . Session::userId(), 'system');
-        }
-		
-		Session::flash('success', 'Your upcycler role application has been sent for review!');
 
         header('Location: /profile');
         exit;

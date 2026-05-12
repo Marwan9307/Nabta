@@ -115,9 +115,9 @@ class UserModel {
         return $stmt->execute([$score, $userId]);
     }
 
-    public function applyUpcyclerRole($userId, $portfolio, $motivation = '') {
-        $stmt = $this->db->prepare("INSERT OR REPLACE INTO upcycler (user_id, portfolio, motivation, status) VALUES (?, ?, ?, 'pending')");
-        return $stmt->execute([$userId, $portfolio, $motivation]);
+    public function applyUpcyclerRole($userId, $portfolio) {
+        $stmt = $this->db->prepare("INSERT OR REPLACE INTO upcycler (user_id, portfolio, status) VALUES (?, ?, 'pending')");
+        return $stmt->execute([$userId, $portfolio]);
     }
 
     public function approveUpcycler($userId) {
@@ -133,15 +133,8 @@ class UserModel {
     }
 
     public function getPendingUpcyclers() {
-        $stmt = $this->db->query("SELECT u.user_id, u.username, up.portfolio, up.motivation, up.status FROM users u JOIN upcycler up ON u.user_id = up.user_id WHERE up.status = 'pending'");
+        $stmt = $this->db->query("SELECT u.user_id, u.username, up.portfolio, up.status FROM users u JOIN upcycler up ON u.user_id = up.user_id WHERE up.status = 'pending'");
         return $stmt->fetchAll();
-    }
-
-    public function getUpcyclerStatus($userId) {
-        $stmt = $this->db->prepare("SELECT status FROM upcycler WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        $row = $stmt->fetch();
-        return $row ? $row['status'] : null;
     }
 
     public function follow($followerId, $followedId) {
@@ -181,9 +174,5 @@ class UserModel {
 
     public function getStaff() {
         return $this->db->query("SELECT u.user_id, u.username, u.role, s.salary, s.specialization FROM users u JOIN staff s ON u.user_id = s.user_id")->fetchAll();
-    }
-
-    public function getAdmins() {
-        return $this->db->query("SELECT user_id FROM users WHERE role IN ('admin', 'moderator')")->fetchAll();
     }
 }
