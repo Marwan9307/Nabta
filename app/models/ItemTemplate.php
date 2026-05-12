@@ -1,6 +1,6 @@
 <?php
 
-// Abstraction Class
+
 class ItemTemplate {
     private $templateID;
     private $name;
@@ -10,7 +10,6 @@ class ItemTemplate {
     private $category;
 
     public function __construct($name, $description, $weight, $upcycled, $category) {
-        // Shared descriptive information
         $this->name = $name;
         $this->description = $description;
         $this->itemWeight = $weight;

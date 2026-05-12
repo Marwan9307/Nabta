@@ -1,18 +1,16 @@
 <?php
 
-// The Observer interface (Registered Users)
+
 interface Observer {
     public function receiveNotification($notification);
 }
 
-// The Subject interface (Transaction, Order, Community)
 interface Subject {
     public function attach(Observer $observer);
     public function detach(Observer $observer);
     public function notifyObservers($eventData);
 }
 
-// Observable Coordinator
 class AutomatedService implements Subject {
     private $observers = [];
 
@@ -26,7 +24,6 @@ class AutomatedService implements Subject {
         });
     }
 
-    // Pushing the notification to all subscribers
     public function notifyObservers($notification) {
         foreach ($this->observers as $observer) {
             $observer->receiveNotification($notification);
@@ -39,10 +36,9 @@ class AutomatedService implements Subject {
     }
 }
 
-// Concrete Notification Object
 class Notification {
     private $message;
-    private $type; // ORDER, PAYMENT, COMMUNITY
+    private $type; 
     private $isRead;
     private $createdAt;
 
